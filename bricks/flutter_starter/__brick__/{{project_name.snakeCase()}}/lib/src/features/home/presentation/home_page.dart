@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
+import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
+import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    getIt<OnboardingRepository>().markCompleted();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +51,11 @@ class HomePage extends StatelessWidget {
               Text(
                 'Base API URL: ${config.baseApiUrl}',
                 style: textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => context.push(AppRoutes.settings),
+                child: const Text('Open Settings'),
               ),
             ],
           ),

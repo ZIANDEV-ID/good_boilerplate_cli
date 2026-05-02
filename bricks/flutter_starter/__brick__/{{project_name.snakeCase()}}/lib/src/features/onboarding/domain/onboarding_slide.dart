@@ -1,46 +1,38 @@
+enum OnboardingIllustrationType { soundWave, phonePatterns, speakerTest }
+
 class OnboardingSlide {
   const OnboardingSlide({
-    required this.logoUrl,
-    required this.imageUrl,
-    required this.title,
-    required this.subtitle,
+    required this.headline,
+    required this.subheadline,
+    required this.illustrationType,
+    this.buttonText = 'Continue',
+    this.trustedInfo = 'Trusted by 104626+ users',
   });
 
-  final String logoUrl;
-  final String imageUrl;
-  final String title;
-  final String subtitle;
+  final String headline;
+  final String subheadline;
+  final OnboardingIllustrationType illustrationType;
+  final String buttonText;
+  final String trustedInfo;
 }
 
 const defaultOnboardingSlides = [
   OnboardingSlide(
-    logoUrl: 'https://placehold.co/96x96/png?text=Logo',
-    imageUrl: 'https://placehold.co/720x520/png?text=Slide+1',
-    title: 'Build with clarity',
-    subtitle: 'A starter foundation with routing, state, DI, and networking ready.',
+    headline: 'Powerful Sound\nFrequencies',
+    subheadline:
+        'Use specially calibrated tones to effectively eject water from your phone speakers.',
+    illustrationType: OnboardingIllustrationType.soundWave,
   ),
   OnboardingSlide(
-    logoUrl: 'https://placehold.co/96x96/png?text=Logo',
-    imageUrl: 'https://placehold.co/720x520/png?text=Slide+2',
-    title: 'Flavor aware',
-    subtitle: 'Development and production entry points keep config explicit.',
+    headline: 'Multiple Eject\nPatterns',
+    subheadline:
+        'Choose from various sound patterns optimized for different speaker types.',
+    illustrationType: OnboardingIllustrationType.phonePatterns,
   ),
   OnboardingSlide(
-    logoUrl: 'https://placehold.co/96x96/png?text=Logo',
-    imageUrl: 'https://placehold.co/720x520/png?text=Slide+3',
-    title: 'Reliable networking',
-    subtitle: 'Dio is configured once and can log requests during development.',
-  ),
-  OnboardingSlide(
-    logoUrl: 'https://placehold.co/96x96/png?text=Logo',
-    imageUrl: 'https://placehold.co/720x520/png?text=Slide+4',
-    title: 'Reusable design',
-    subtitle: 'Theme colors and typography are centralized for quick customization.',
-  ),
-  OnboardingSlide(
-    logoUrl: 'https://placehold.co/96x96/png?text=Logo',
-    imageUrl: 'https://placehold.co/720x520/png?text=Slide+5',
-    title: 'Ready for growth',
-    subtitle: 'Feature folders make the next module easy to add and maintain.',
+    headline: 'Test Your Speakers',
+    subheadline:
+        'Check speaker health with stereo tests and custom tone generation.',
+    illustrationType: OnboardingIllustrationType.speakerTest,
   ),
 ];
