@@ -3,6 +3,7 @@ enum AppFlavor { dev, prod }
 class AppConfig {
   const AppConfig({
     required this.flavor,
+    required this.appId,
     required this.appName,
     required this.baseApiUrl,
     required this.enableNetworkLogs,
@@ -10,6 +11,7 @@ class AppConfig {
   });
 
   final AppFlavor flavor;
+  final String appId;
   final String appName;
   final String baseApiUrl;
   final bool enableNetworkLogs;

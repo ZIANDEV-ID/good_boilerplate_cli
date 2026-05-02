@@ -15,13 +15,23 @@ mason get
 mason make flutter_starter
 ```
 
+Example with custom app metadata:
+
+```sh
+mason make flutter_starter \
+  --project_name my_app \
+  --app_id id.ziandev.my_app \
+  --app_name "My App" \
+  --description "A production-ready Flutter starter."
+```
+
 The `flutter_starter` brick provides a ready baseline that can be expanded with native platform flavor settings when bundle ids, schemes, and app icons are finalized.
 
 ## Current Starter Features
 
 - Dev and prod flavor entry points.
 - VS Code launch configurations for dev and prod.
-- Per-flavor config for app name, base API URL, network logging, and upgrade checks.
+- Per-flavor config for app id, app name, base API URL, network logging, and upgrade checks.
 - Dio, Talker Dio logger, Flutter Bloc/Cubit, GoRouter, cached network images, GetIt, Upgrader.
 - Json Serializable setup with an example model.
 - Five-slide onboarding data that can customize logo, image, title, and subtitle.

@@ -11,18 +11,28 @@ mason get
 mason make flutter_starter
 ```
 
+Example with custom app metadata:
+
+```sh
+mason make flutter_starter \
+  --project_name my_app \
+  --app_id id.ziandev.my_app \
+  --app_name "My App" \
+  --description "A production-ready Flutter starter."
+```
+
 ## Variables
 
 - `project_name`: Dart package name for the generated project.
 - `app_name`: Display name shown in the generated app.
-- `org_name`: Organization id reserved for native app ids.
+- `app_id`: Application id stored in the generated app config.
 - `description`: Pubspec description.
 
 ## Included
 
 - Dev and prod app flavor entry points: `lib/main_dev.dart` and `lib/main_prod.dart`.
 - VS Code launch configurations for dev and prod.
-- `AppConfig` for per-flavor API base URL, network logging, and upgrade checks.
+- `AppConfig` for app id, per-flavor API base URL, network logging, and upgrade checks.
 - Dio with `talker_dio_logger`.
 - BLoC Cubit with `flutter_bloc`.
 - GoRouter navigation.

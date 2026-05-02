@@ -35,12 +35,12 @@ vars:
     type: string
     description: The display name used inside the generated app.
     default: My App
-    prompt: What is the app display name?
-  org_name:
+    prompt: What is the app name?
+  app_id:
     type: string
-    description: The organization identifier used for native app ids.
-    default: com.example
-    prompt: What is the organization id?
+    description: The application id used by the generated app config.
+    default: com.example.my_app
+    prompt: What is the app id?
   description:
     type: string
     description: The pubspec description for the generated project.

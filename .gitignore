@@ -1,2 +1,7 @@
 .mason/
 .DS_Store
+
+# Keep generated project test templates tracked even when a global gitignore
+# ignores generic `test` folders.
+!bricks/flutter_starter/__brick__/{{project_name.snakeCase()}}/test/
+!bricks/flutter_starter/__brick__/{{project_name.snakeCase()}}/test/widget_test.dart

@@ -5,6 +5,7 @@ void main() {
   bootstrap(
     const AppConfig(
       flavor: AppFlavor.dev,
+      appId: '{{app_id}}.dev',
       appName: '{{app_name}} Dev',
       baseApiUrl: 'https://dev-api.example.com',
       enableNetworkLogs: true,

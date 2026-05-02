@@ -30,6 +30,11 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
+                'App ID: ${config.appId}',
+                style: textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
                 'Base API URL: ${config.baseApiUrl}',
                 style: textTheme.bodyMedium,
               ),

@@ -2,6 +2,8 @@
 
 {{description}}
 
+App ID: `{{app_id}}`
+
 ## Getting Started
 
 ```sh
