@@ -16,35 +16,46 @@ From this Mason workspace:
 ```sh
 cd /Users/zianfahrudy/Documents/good_boilerplate_cli
 mason get
-mason make flutter_starter -q
+mason make good_boilerplate -q
 ```
 
-Example with custom app metadata:
+Example with custom app metadata via `config.json`:
 
-```sh
-mason make flutter_starter -q \
-  --project_name my_app \
-  --app_id id.ziandev.my_app \
-  --app_name "My App" \
-  --description "A production-ready Flutter starter."
+```json
+{
+  "project_name": "my_app",
+  "app_id": "id.ziandev.my_app",
+  "app_name": "My App",
+  "description": "A production-ready Flutter starter."
+}
 ```
 
-To use the brick from any directory, register it globally once:
+```sh
+mason make good_boilerplate -q -c config.json
+```
+
+After the brick is published to BrickHub, install it globally once:
 
 ```sh
-mason add -g flutter_starter --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/flutter_starter
+mason add -g good_boilerplate
+```
+
+To use the local brick from any directory before publishing, register it globally once:
+
+```sh
+mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/good_boilerplate
 ```
 
 Then run from the target output folder:
 
 ```sh
 cd /Users/zianfahrudy/Documents
-mason make flutter_starter
+mason make good_boilerplate
 ```
 
 Use `-q` when generating if you want Mason to hide the long per-file `created ...` list and keep the output concise.
 
-The `flutter_starter` brick provides a ready baseline that can be expanded with native platform flavor settings when bundle ids, schemes, and app icons are finalized.
+The `good_boilerplate` brick provides a ready baseline that can be expanded with native platform flavor settings when bundle ids, schemes, and app icons are finalized.
 By default, its post-generation hook runs `flutter create` to add `android`, `ios`, `web`, and `macos` platform folders.
 Do not use `--no-hooks` if you want those native platform folders.
 

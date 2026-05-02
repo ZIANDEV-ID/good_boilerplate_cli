@@ -1,4 +1,4 @@
-# flutter_starter
+# good_boilerplate
 
 [![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
 
@@ -12,29 +12,40 @@ From the Mason workspace:
 
 ```sh
 mason get
-mason make flutter_starter -q
+mason make good_boilerplate -q
 ```
 
-Or register globally once:
+After the brick is published to BrickHub, install it globally once:
 
 ```sh
-mason add -g flutter_starter --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/flutter_starter
+mason add -g good_boilerplate
+```
+
+Or register the local brick globally before publishing:
+
+```sh
+mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/good_boilerplate
 ```
 
 Then run from any target output folder:
 
 ```sh
-mason make flutter_starter -q
+mason make good_boilerplate -q
 ```
 
-Example with custom app metadata:
+Example with custom app metadata via `config.json`:
+
+```json
+{
+  "project_name": "my_app",
+  "app_id": "id.ziandev.my_app",
+  "app_name": "My App",
+  "description": "A production-ready Flutter starter."
+}
+```
 
 ```sh
-mason make flutter_starter -q \
-  --project_name my_app \
-  --app_id id.ziandev.my_app \
-  --app_name "My App" \
-  --description "A production-ready Flutter starter."
+mason make good_boilerplate -q -c config.json
 ```
 
 ## Variables
