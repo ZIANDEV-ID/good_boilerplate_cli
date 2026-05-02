@@ -1,0 +1,48 @@
+name: flutter_starter
+description: A Flutter starter project brick.
+
+# The following defines the brick repository url.
+# Uncomment and update the following line before publishing the brick.
+# repository: https://github.com/my_org/my_repo
+
+# The following defines the version and build number for your brick.
+# A version number is three numbers separated by dots, like 1.2.34
+# followed by an optional build number (separated by a +).
+version: 0.1.0+1
+
+# The following defines the environment for the current brick.
+# It includes the version of mason that the brick requires.
+environment:
+  mason: ^0.1.2
+
+# Variables specify dynamic values that your brick depends on.
+# Zero or more variables can be specified for a given brick.
+# Each variable has:
+#  * a type (string, number, boolean, enum, array, or list)
+#  * an optional short description
+#  * an optional default value
+#  * an optional list of default values (array only)
+#  * an optional prompt phrase used when asking for the variable
+#  * a list of values (enums only)
+#  * an optional separator (list only)
+vars:
+  project_name:
+    type: string
+    description: The Dart package name for the generated Flutter project.
+    default: my_app
+    prompt: What is the project name?
+  app_name:
+    type: string
+    description: The display name used inside the generated app.
+    default: My App
+    prompt: What is the app display name?
+  org_name:
+    type: string
+    description: The organization identifier used for native app ids.
+    default: com.example
+    prompt: What is the organization id?
+  description:
+    type: string
+    description: The pubspec description for the generated project.
+    default: A new Flutter application.
+    prompt: What is the project description?
