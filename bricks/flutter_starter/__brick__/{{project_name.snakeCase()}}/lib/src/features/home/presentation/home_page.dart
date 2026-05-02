@@ -54,6 +54,19 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
+                onPressed: () => context.push(AppRoutes.objectCapture),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(double.infinity, 54),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Capture Object'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
                 onPressed: () => context.push(AppRoutes.settings),
                 child: const Text('Open Settings'),
               ),

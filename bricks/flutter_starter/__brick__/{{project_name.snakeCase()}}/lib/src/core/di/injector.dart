@@ -10,6 +10,7 @@ import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/revenuecat_serv
 import 'package:{{project_name.snakeCase()}}/src/core/theme/cubit/theme_cubit.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:{{project_name.snakeCase()}}/src/features/object_capture/presentation/cubit/object_capture_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -30,6 +31,9 @@ Future<void> configureDependencies(AppConfig config) async {
   );
   getIt.registerFactory(
     () => OnboardingCubit(getIt<OnboardingRepository>()),
+  );
+  getIt.registerFactory(
+    () => ObjectCaptureCubit(getIt<DailyQuotaService>()),
   );
 
   if (config.enableMonetizationServices) {

@@ -6,12 +6,16 @@ import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboar
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/presentation/onboarding_page.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/paywall/presentation/paywall_page.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/settings/presentation/settings_page.dart';
+import 'package:{{project_name.snakeCase()}}/src/features/object_capture/presentation/pages/object_capture_page.dart';
+import 'package:{{project_name.snakeCase()}}/src/features/object_capture/presentation/cubit/object_capture_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 abstract final class AppRoutes {
   static const onboarding = '/';
   static const home = '/home';
   static const paywall = '/paywall';
   static const settings = '/settings';
+  static const objectCapture = '/object-capture';
 }
 
 final appRouter = GoRouter(
@@ -42,6 +46,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.settings,
       builder: (context, state) => const SettingsPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.objectCapture,
+      builder: (context, state) => BlocProvider(
+        create: (context) => getIt<ObjectCaptureCubit>()..init(),
+        child: const ObjectCapturePage(),
+      ),
     ),
   ],
 );
