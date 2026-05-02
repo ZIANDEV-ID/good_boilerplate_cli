@@ -32,7 +32,7 @@ class ObjectCaptureCubit extends Cubit<ObjectCaptureState> {
     ));
   }
 
-  Future<void> startAnalysis() async {
+  Future<void> startAnalysis({String? imagePath}) async {
     final canConsume = await _quotaService.canConsume(
       featureKey: _featureKey,
       dailyLimit: _dailyLimit,
@@ -54,10 +54,11 @@ class ObjectCaptureCubit extends Cubit<ObjectCaptureState> {
       dailyLimit: _dailyLimit,
     );
 
+    final source = imagePath != null ? 'dari gallery' : 'dari kamera';
     emit(state.copyWith(
       status: ObjectCaptureStatus.success,
       remainingQuota: newUsage.remaining,
-      result: "Ini adalah objek dummy yang berhasil dianalisis. Objek ini terlihat sangat menarik dan memiliki potensi besar untuk digunakan dalam berbagai aplikasi.",
+      result: "Ini adalah objek dummy yang berhasil dianalisis $source. Objek ini terlihat sangat menarik dan memiliki potensi besar untuk digunakan dalam berbagai aplikasi.",
     ));
   }
 

@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 import '../cubit/object_capture_cubit.dart';
 import '../widgets/analyzing_overlay.dart';
 import '../widgets/result_bottom_sheet.dart';
@@ -16,6 +16,7 @@ class ObjectCapturePage extends StatefulWidget {
 class _ObjectCapturePageState extends State<ObjectCapturePage> {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -44,6 +45,47 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
     }
   }
 
+  Future<void> _pickFromGallery() async {
+    final cubit = context.read<ObjectCaptureCubit>();
+    final currentState = cubit.state;
+
+    if (currentState.status == ObjectCaptureStatus.analyzing) return;
+
+    final XFile? pickedFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
+
+    if (pickedFile == null) return;
+    if (!mounted) return;
+
+    // Show snackbar confirming image selected, then trigger analysis
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.check_circle_outline, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Gambar dipilih: ${pickedFile.name}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    // Trigger analysis (passing path to cubit – currently used for future real API)
+    await cubit.startAnalysis(imagePath: pickedFile.path);
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
@@ -63,7 +105,19 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
           );
         } else if (state.status == ObjectCaptureStatus.noQuota) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("You have reached your daily limit.")),
+            SnackBar(
+              content: const Row(
+                children: [
+                  Icon(Icons.block, color: Colors.white, size: 18),
+                  SizedBox(width: 8),
+                  Text("Kamu telah mencapai batas harian."),
+                ],
+              ),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
           );
         }
       },
@@ -117,42 +171,62 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
               ),
             ),
 
-            // Capture Button
+            // Bottom Controls: Gallery | Capture | (placeholder)
             Positioned(
               bottom: 40,
               left: 0,
               right: 0,
               child: BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
                 builder: (context, state) {
-                  final isAnalyzing = state.status == ObjectCaptureStatus.analyzing;
-                  return Center(
-                    child: GestureDetector(
-                      onTap: isAnalyzing
-                          ? null
-                          : () => context.read<ObjectCaptureCubit>().startAnalysis(),
-                      child: Container(
-                        height: 80,
-                        width: 80,
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 4),
+                  final isAnalyzing =
+                      state.status == ObjectCaptureStatus.analyzing;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Gallery Button
+                        _GalleryButton(
+                          onTap: isAnalyzing ? null : _pickFromGallery,
                         ),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
+
+                        // Capture Button
+                        GestureDetector(
+                          onTap: isAnalyzing
+                              ? null
+                              : () => context
+                                  .read<ObjectCaptureCubit>()
+                                  .startAnalysis(),
+                          child: Container(
+                            height: 80,
+                            width: 80,
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.white, width: 4),
+                            ),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: isAnalyzing
+                                  ? const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.black,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : null,
+                            ),
                           ),
-                          child: isAnalyzing
-                              ? const Center(
-                                  child: CircularProgressIndicator(
-                                    color: Colors.black,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : null,
                         ),
-                      ),
+
+                        // Spacer (symmetrical with gallery button)
+                        const SizedBox(width: 56),
+                      ],
                     ),
                   );
                 },
@@ -169,6 +243,49 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Gallery Button Widget ────────────────────────────────────────────────────
+
+class _GalleryButton extends StatelessWidget {
+  const _GalleryButton({this.onTap});
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDisabled = onTap == null;
+    return GestureDetector(
+      onTap: onTap,
+      child: Opacity(
+        opacity: isDisabled ? 0.4 : 1.0,
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.white12,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white30, width: 1.5),
+          ),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.photo_library_outlined, color: Colors.white, size: 24),
+              SizedBox(height: 2),
+              Text(
+                'Gallery',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
