@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/quota/daily_quota_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/cubit/theme_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -12,6 +14,8 @@ class SettingsPage extends StatelessWidget {
   static const privacyPolicyUrl = 'https://example.com/privacy-policy';
   static const termsOfUseUrl = 'https://example.com/terms-of-use';
   static const contactEmail = 'support@example.com';
+  static const objectCaptureFeatureKey = 'object_capture';
+  static const objectCaptureDailyLimit = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +38,15 @@ class SettingsPage extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 children: [
+                  SettingsSectionTitle(colors: colors, title: 'Daily Limit'),
+                  const SizedBox(height: 16),
+                  DailyLimitSection(
+                    colors: colors,
+                    featureKey: objectCaptureFeatureKey,
+                    dailyLimit: objectCaptureDailyLimit,
+                    onUpgrade: () => context.push(AppRoutes.paywall),
+                  ),
+                  const SizedBox(height: 24),
                   SettingsCard(
                     colors: colors,
                     children: [
@@ -47,10 +60,7 @@ class SettingsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SettingsSectionTitle(
-                    colors: colors,
-                    title: 'Appearance',
-                  ),
+                  SettingsSectionTitle(colors: colors, title: 'Appearance'),
                   const SizedBox(height: 16),
                   SettingsCard(
                     colors: colors,
@@ -64,10 +74,7 @@ class SettingsPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SettingsSectionTitle(
-                    colors: colors,
-                    title: 'General',
-                  ),
+                  SettingsSectionTitle(colors: colors, title: 'General'),
                   const SizedBox(height: 16),
                   SettingsCard(
                     colors: colors,
@@ -122,11 +129,98 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class SettingsHeader extends StatelessWidget {
-  const SettingsHeader({
+class DailyLimitSection extends StatelessWidget {
+  const DailyLimitSection({
     required this.colors,
+    required this.featureKey,
+    required this.dailyLimit,
+    required this.onUpgrade,
     super.key,
   });
+
+  final SettingsColors colors;
+  final String featureKey;
+  final int dailyLimit;
+  final VoidCallback onUpgrade;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<DailyQuotaState>(
+      future: getIt<DailyQuotaService>().getUsage(
+        featureKey: featureKey,
+        dailyLimit: dailyLimit,
+      ),
+      builder: (context, snapshot) {
+        final state = snapshot.data;
+        final used = state?.used ?? 0;
+        final max = state?.dailyLimit ?? dailyLimit;
+        final progress = max == 0 ? 0.0 : (used / max).clamp(0.0, 1.0);
+
+        return SettingsCard(
+          colors: colors,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.timelapse_rounded,
+                        color: const Color(0xFF3B82F6),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Daily Usage',
+                          style: TextStyle(
+                            color: colors.text,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '$used / $max used',
+                        style: TextStyle(
+                          color: colors.mutedText,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      minHeight: 8,
+                      color: const Color(0xFF3B82F6),
+                      backgroundColor: colors.divider,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SettingsActionButton(
+                    colors: colors,
+                    icon: Icons.workspace_premium_rounded,
+                    title: 'Upgrade for Unlimited Access',
+                    onTap: onUpgrade,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class SettingsHeader extends StatelessWidget {
+  const SettingsHeader({required this.colors, super.key});
 
   final SettingsColors colors;
 
@@ -190,11 +284,7 @@ class SettingsSectionTitle extends StatelessWidget {
 }
 
 class SettingsCard extends StatelessWidget {
-  const SettingsCard({
-    required this.colors,
-    required this.children,
-    super.key,
-  });
+  const SettingsCard({required this.colors, required this.children, super.key});
 
   final SettingsColors colors;
   final List<Widget> children;
@@ -206,10 +296,7 @@ class SettingsCard extends StatelessWidget {
         color: colors.card,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: children,
-      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
   }
 }
@@ -255,11 +342,7 @@ class SettingsTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: colors.text,
-                size: 24,
-              ),
+              Icon(Icons.chevron_right_rounded, color: colors.text, size: 24),
             ],
           ),
         ),
@@ -310,6 +393,43 @@ class SettingsSwitchTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SettingsActionButton extends StatelessWidget {
+  const SettingsActionButton({
+    required this.colors,
+    required this.icon,
+    required this.title,
+    required this.onTap,
+    super.key,
+  });
+
+  final SettingsColors colors;
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: ElevatedButton.icon(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFFD60A),
+          foregroundColor: const Color(0xFF111827),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+        ),
+        icon: Icon(icon, size: 20),
+        label: Text(title),
+        onPressed: onTap,
       ),
     );
   }

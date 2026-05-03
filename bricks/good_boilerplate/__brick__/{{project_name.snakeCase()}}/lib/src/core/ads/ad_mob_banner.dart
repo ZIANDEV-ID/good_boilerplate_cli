@@ -37,7 +37,7 @@ class _AdMobBannerState extends State<AdMobBanner> {
 
         setState(() => _isLoaded = true);
       },
-      onAdFailedToLoad: (_, __) {
+      onAdFailedToLoad: (_, _) {
         if (!mounted) {
           return;
         }

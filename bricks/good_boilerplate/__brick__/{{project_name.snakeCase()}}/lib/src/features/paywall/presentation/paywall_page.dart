@@ -126,10 +126,7 @@ class _PaywallPageState extends State<PaywallPage> {
   }
 
   Future<void> _openUrl(String url) async {
-    await launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
+    await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
   void _showCloseButton() {
@@ -150,9 +147,9 @@ class _PaywallPageState extends State<PaywallPage> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -215,10 +212,7 @@ class PaywallContent extends StatelessWidget {
                 icon: Icons.all_inclusive_rounded,
                 title: 'Unlimited Ejects',
               ),
-              PaywallBenefit(
-                icon: Icons.block_rounded,
-                title: 'No Ads',
-              ),
+              PaywallBenefit(icon: Icons.block_rounded, title: 'No Ads'),
               PaywallBenefit(
                 icon: Icons.lock_outline_rounded,
                 title: 'No Annoying Paywalls',
@@ -260,6 +254,52 @@ class PaywallContent extends StatelessWidget {
       ),
     );
   }
+}
+
+class DelayedCloseButton extends StatelessWidget {
+  const DelayedCloseButton({
+    required this.canClose,
+    required this.onReady,
+    required this.onClose,
+    super.key,
+  });
+
+  final bool canClose;
+  final VoidCallback onReady;
+  final VoidCallback onClose;
+
+  @override
+  Widget build(BuildContext context) {
+    if (canClose) {
+      return SizedBox.square(
+        dimension: 32,
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          icon: const Icon(Icons.close_rounded, size: 22),
+          color: PaywallColors.close,
+          onPressed: onClose,
+        ),
+      );
+    }
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(seconds: 5),
+      onEnd: onReady,
+      builder: (context, value, child) {
+        return SizedBox.square(
+          dimension: 22,
+          child: CircularProgressIndicator(
+            value: value,
+            strokeWidth: 1.8,
+            color: PaywallColors.primary,
+            backgroundColor: PaywallColors.cardBorder,
+          ),
+        );
+      },
+    );
+  }
+}
 
 class PaywallHero extends StatelessWidget {
   const PaywallHero({super.key});
@@ -268,11 +308,7 @@ class PaywallHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        Icon(
-          Icons.volume_up_outlined,
-          color: PaywallColors.primary,
-          size: 64,
-        ),
+        Icon(Icons.volume_up_outlined, color: PaywallColors.primary, size: 64),
         SizedBox(height: 10),
         Text(
           'Unlimited Access',
@@ -289,20 +325,14 @@ class PaywallHero extends StatelessWidget {
 }
 
 class PaywallBenefit {
-  const PaywallBenefit({
-    required this.icon,
-    required this.title,
-  });
+  const PaywallBenefit({required this.icon, required this.title});
 
   final IconData icon;
   final String title;
 }
 
 class PaywallBenefitList extends StatelessWidget {
-  const PaywallBenefitList({
-    required this.benefits,
-    super.key,
-  });
+  const PaywallBenefitList({required this.benefits, super.key});
 
   final List<PaywallBenefit> benefits;
 
@@ -399,7 +429,9 @@ class PaywallPlanTile extends StatelessWidget {
           color: isSelected ? PaywallColors.selectedPlan : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? PaywallColors.primary : PaywallColors.cardBorder,
+            color: isSelected
+                ? PaywallColors.primary
+                : PaywallColors.cardBorder,
             width: 1.5,
           ),
         ),
@@ -444,10 +476,7 @@ class PaywallPlanTile extends StatelessWidget {
 }
 
 class PaywallBadge extends StatelessWidget {
-  const PaywallBadge({
-    required this.text,
-    super.key,
-  });
+  const PaywallBadge({required this.text, super.key});
 
   final String text;
 
@@ -474,10 +503,7 @@ class PaywallBadge extends StatelessWidget {
 }
 
 class PaywallSelectionMark extends StatelessWidget {
-  const PaywallSelectionMark({
-    required this.isSelected,
-    super.key,
-  });
+  const PaywallSelectionMark({required this.isSelected, super.key});
 
   final bool isSelected;
 
@@ -563,10 +589,7 @@ class PaywallContinueButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         onPressed: onPressed,
         child: Text(text),
@@ -603,11 +626,7 @@ class PaywallFooterLinks extends StatelessWidget {
 }
 
 class PaywallFooterLink extends StatelessWidget {
-  const PaywallFooterLink({
-    required this.text,
-    required this.onTap,
-    super.key,
-  });
+  const PaywallFooterLink({required this.text, required this.onTap, super.key});
 
   final String text;
   final VoidCallback onTap;

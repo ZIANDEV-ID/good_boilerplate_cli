@@ -58,7 +58,8 @@ class ObjectCaptureCubit extends Cubit<ObjectCaptureState> {
     emit(state.copyWith(
       status: ObjectCaptureStatus.success,
       remainingQuota: newUsage.remaining,
-      result: "Ini adalah objek dummy yang berhasil dianalisis $source. Objek ini terlihat sangat menarik dan memiliki potensi besar untuk digunakan dalam berbagai aplikasi.",
+      result:
+          'Ini adalah objek dummy yang berhasil dianalisis $source. Objek ini terlihat sangat menarik dan memiliki potensi besar untuk digunakan dalam berbagai aplikasi.',
     ));
   }
 

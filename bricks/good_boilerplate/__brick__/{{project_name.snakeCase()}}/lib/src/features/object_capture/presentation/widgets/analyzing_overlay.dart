@@ -34,7 +34,7 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withValues(alpha: 0.5),
       child: Stack(
         children: [
           AnimatedBuilder(
@@ -49,7 +49,7 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.cyanAccent.withOpacity(0.8),
+                        color: Colors.cyanAccent.withValues(alpha: 0.8),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -75,7 +75,7 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Analyzing Object...",
+                  'Analyzing Object...',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

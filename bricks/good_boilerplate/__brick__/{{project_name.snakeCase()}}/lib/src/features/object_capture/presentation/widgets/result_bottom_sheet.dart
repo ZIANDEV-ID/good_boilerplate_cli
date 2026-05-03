@@ -39,7 +39,7 @@ class ResultBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Analysis Result",
+                'Analysis Result',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -47,11 +47,11 @@ class ResultBottomSheet extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  "Quota: $remainingQuota left",
+                  'Quota: $remainingQuota left',
                   style: const TextStyle(
                     color: Colors.blue,
                     fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class ResultBottomSheet extends StatelessWidget {
                 elevation: 0,
               ),
               child: const Text(
-                "Capture Again",
+                'Capture Again',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

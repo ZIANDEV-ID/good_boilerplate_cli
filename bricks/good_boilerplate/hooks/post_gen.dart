@@ -46,6 +46,7 @@ Future<void> run(HookContext context) async {
       appName: appName,
       orgName: orgName,
     );
+    await _patchAndroidConcurrentFuturesDependency(projectDir);
     await _patchAdMobMetadata(projectDir);
     context.logger.success('Flutter platform folders created.');
   }
@@ -243,6 +244,34 @@ Future<void> _patchAndroidMainActivity({
 Future<void> _patchAdMobMetadata(Directory projectDir) async {
   await _patchAndroidAdMobAppId(projectDir);
   await _patchIosAdMobAppId(projectDir);
+}
+
+Future<void> _patchAndroidConcurrentFuturesDependency(Directory projectDir) async {
+  final gradleFile = File('${projectDir.path}/android/build.gradle.kts');
+
+  if (!await gradleFile.exists()) return;
+
+  var content = await gradleFile.readAsString();
+  if (content.contains('androidx.concurrent:concurrent-futures')) {
+    return;
+  }
+
+  content = content.replaceFirst(
+    'tasks.register<Delete>("clean") {',
+    'subprojects {\n'
+        '    configurations.configureEach {\n'
+        '        if (name == "implementation" || name == "compileOnly") {\n'
+        '            project.dependencies.add(\n'
+        '                name,\n'
+        '                "androidx.concurrent:concurrent-futures:1.2.0",\n'
+        '            )\n'
+        '        }\n'
+        '    }\n'
+        '}\n\n'
+        'tasks.register<Delete>("clean") {',
+  );
+
+  await gradleFile.writeAsString(content);
 }
 
 Future<void> _patchAndroidAdMobAppId(Directory projectDir) async {

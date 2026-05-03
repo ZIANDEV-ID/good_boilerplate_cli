@@ -1,7 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
 import '../cubit/object_capture_cubit.dart';
 import '../widgets/analyzing_overlay.dart';
 import '../widgets/result_bottom_sheet.dart';
@@ -17,6 +20,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
   final ImagePicker _imagePicker = ImagePicker();
+  bool _isFlashEnabled = false;
 
   @override
   void initState() {
@@ -40,7 +44,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
           setState(() {});
         }
       } catch (e) {
-        debugPrint("Camera Error: $e");
+        debugPrint('Camera Error: $e');
       }
     }
   }
@@ -64,7 +68,11 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle_outline, color: Colors.white, size: 18),
+            const Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 18,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -86,17 +94,64 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
     await cubit.startAnalysis(imagePath: pickedFile.path);
   }
 
+  Future<void> _toggleFlash() async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+
+    final nextValue = !_isFlashEnabled;
+    try {
+      await controller.setFlashMode(
+        nextValue ? FlashMode.torch : FlashMode.off,
+      );
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isFlashEnabled = nextValue);
+    } catch (e) {
+      debugPrint('Flash Error: $e');
+    }
+  }
+
   @override
   void dispose() {
     _controller?.dispose();
     super.dispose();
   }
 
+  Widget _buildCameraPreview() {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) {
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
+    }
+
+    final previewSize = controller.value.previewSize;
+    if (previewSize == null) {
+      return SizedBox.expand(child: CameraPreview(controller));
+    }
+
+    return SizedBox.expand(
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: SizedBox(
+          width: previewSize.height,
+          height: previewSize.width,
+          child: CameraPreview(controller),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ObjectCaptureCubit, ObjectCaptureState>(
       listener: (context, state) {
-        if (state.status == ObjectCaptureStatus.success && state.result != null) {
+        if (state.status == ObjectCaptureStatus.success &&
+            state.result != null) {
           showResultBottomSheet(
             context,
             result: state.result!,
@@ -110,13 +165,14 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
                 children: [
                   Icon(Icons.block, color: Colors.white, size: 18),
                   SizedBox(width: 8),
-                  Text("Kamu telah mencapai batas harian."),
+                  Text('Kamu telah mencapai batas harian.'),
                 ],
               ),
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           );
         }
@@ -126,44 +182,41 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
         body: Stack(
           children: [
             // Camera Preview
-            if (_controller != null && _controller!.value.isInitialized)
-              Center(
-                child: CameraPreview(_controller!),
-              )
-            else
-              const Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
+            _buildCameraPreview(),
 
             // Top Bar
             Positioned(
-              top: MediaQuery.of(context).padding.top + 10,
+              top: MediaQuery.of(context).padding.top + 25,
               left: 20,
               right: 20,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                  Row(
+                    children: [
+                      _CameraTopIconButton(
+                        icon: _isFlashEnabled
+                            ? Icons.flash_on_rounded
+                            : Icons.flash_off_rounded,
+                        onTap: _toggleFlash,
+                      ),
+                      const SizedBox(width: 10),
+                      _CameraTopIconButton(
+                        icon: Icons.settings_rounded,
+                        onTap: () => context.push(AppRoutes.settings),
+                      ),
+                    ],
                   ),
                   BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
                     builder: (context, state) {
-                      return Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.black45,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: Text(
-                          "Quota: ${state.remainingQuota}",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      if (state.remainingQuota > 0) {
+                        return _DailyLimitText(
+                          remainingQuota: state.remainingQuota,
+                        );
+                      }
+
+                      return _PremiumButton(
+                        onTap: () => context.push(AppRoutes.paywall),
                       );
                     },
                   ),
@@ -173,7 +226,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
 
             // Bottom Controls: Gallery | Capture | (placeholder)
             Positioned(
-              bottom: 40,
+              bottom: 55,
               left: 0,
               right: 0,
               child: BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
@@ -196,16 +249,15 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
                           onTap: isAnalyzing
                               ? null
                               : () => context
-                                  .read<ObjectCaptureCubit>()
-                                  .startAnalysis(),
+                                    .read<ObjectCaptureCubit>()
+                                    .startAnalysis(),
                           child: Container(
                             height: 80,
                             width: 80,
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
+                            padding: const EdgeInsets.all(8),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
                               shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.white, width: 4),
                             ),
                             child: Container(
                               decoration: const BoxDecoration(
@@ -268,24 +320,105 @@ class _GalleryButton extends StatelessWidget {
           height: 56,
           decoration: BoxDecoration(
             color: Colors.white12,
-            borderRadius: BorderRadius.circular(16),
+            shape: BoxShape.circle,
             border: Border.all(color: Colors.white30, width: 1.5),
           ),
-          child: const Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.photo_library_outlined, color: Colors.white, size: 24),
-              SizedBox(height: 2),
-              Text(
-                'Gallery',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          child: const Icon(
+            Icons.photo_library_outlined,
+            color: AppColors.primary,
+            size: 26,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CameraTopIconButton extends StatelessWidget {
+  const _CameraTopIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: Colors.black45,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Icon(icon, color: Colors.white, size: 22),
+      ),
+    );
+  }
+}
+
+class _PremiumButton extends StatelessWidget {
+  const _PremiumButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: Colors.black45,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: const Color(0xFFFFD60A).withValues(alpha: 0.5),
+          ),
+        ),
+        child: const Row(
+          children: [
+            Icon(
+              Icons.workspace_premium_rounded,
+              color: Color(0xFFFFD60A),
+              size: 18,
+            ),
+            SizedBox(width: 6),
+            Text(
+              'Get Premium',
+              style: TextStyle(
+                color: Color(0xFFFFD60A),
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DailyLimitText extends StatelessWidget {
+  const _DailyLimitText({required this.remainingQuota});
+
+  final int remainingQuota;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: Colors.black45,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: Text(
+        'Daily Limit: $remainingQuota',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
