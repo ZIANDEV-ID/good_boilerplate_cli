@@ -18,7 +18,6 @@ class PaywallPage extends StatefulWidget {
 
 class _PaywallPageState extends State<PaywallPage> {
   late final Future<List<PaywallPlan>> _plansFuture;
-  bool _canClose = false;
   bool _freeTrialEnabled = true;
   String? _selectedPlanId;
 
@@ -36,7 +35,23 @@ class _PaywallPageState extends State<PaywallPage> {
         child: FutureBuilder<List<PaywallPlan>>(
           future: _plansFuture,
           builder: (context, snapshot) {
-            final plans = snapshot.data ?? dummyPaywallPlans;
+            final revenueCatService = getIt<RevenueCatService>();
+            final plans =
+                snapshot.data ??
+                (revenueCatService.isConfigured
+                    ? const <PaywallPlan>[]
+                    : dummyPaywallPlans);
+
+            if (plans.isEmpty) {
+              return PaywallUnavailableContent(
+                isLoading: snapshot.connectionState == ConnectionState.waiting,
+                onClose: _close,
+                onRestore: _restore,
+                onTerms: () => _openUrl(PaywallPage.termsOfUseUrl),
+                onPrivacy: () => _openUrl(PaywallPage.privacyPolicyUrl),
+              );
+            }
+
             final selectedPlanId = _selectedPlanId ?? _defaultPlanId(plans);
             final selectedPlan = plans.firstWhere(
               (plan) => plan.id == selectedPlanId,
@@ -48,9 +63,7 @@ class _PaywallPageState extends State<PaywallPage> {
               selectedPlanId: selectedPlanId,
               freeTrialEnabled: _freeTrialEnabled,
               isLoading: snapshot.connectionState == ConnectionState.waiting,
-              canClose: _canClose,
               onClose: _close,
-              onReady: _showCloseButton,
               onPlanSelected: _selectPlan,
               onFreeTrialChanged: (value) {
                 _setFreeTrialEnabled(value, plans);
@@ -129,14 +142,6 @@ class _PaywallPageState extends State<PaywallPage> {
     await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
   }
 
-  void _showCloseButton() {
-    if (!mounted || _canClose) {
-      return;
-    }
-
-    setState(() => _canClose = true);
-  }
-
   void _close() {
     if (context.canPop()) {
       context.pop();
@@ -153,15 +158,77 @@ class _PaywallPageState extends State<PaywallPage> {
   }
 }
 
+class PaywallUnavailableContent extends StatelessWidget {
+  const PaywallUnavailableContent({
+    required this.isLoading,
+    required this.onClose,
+    required this.onRestore,
+    required this.onTerms,
+    required this.onPrivacy,
+    super.key,
+  });
+
+  final bool isLoading;
+  final VoidCallback onClose;
+  final VoidCallback onRestore;
+  final VoidCallback onTerms;
+  final VoidCallback onPrivacy;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      child: Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: DelayedCloseButton(onClose: onClose),
+          ),
+          const Spacer(),
+          const PaywallHero(),
+          const SizedBox(height: 24),
+          if (isLoading)
+            const CircularProgressIndicator(color: PaywallColors.primary)
+          else ...[
+            const Text(
+              'Plans unavailable',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: PaywallColors.text,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'RevenueCat is configured, but no packages were found in the selected offering.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: PaywallColors.mutedText,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+          const Spacer(),
+          PaywallFooterLinks(
+            onRestore: onRestore,
+            onTerms: onTerms,
+            onPrivacy: onPrivacy,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class PaywallContent extends StatelessWidget {
   const PaywallContent({
     required this.plans,
     required this.selectedPlanId,
     required this.freeTrialEnabled,
     required this.isLoading,
-    required this.canClose,
     required this.onClose,
-    required this.onReady,
     required this.onPlanSelected,
     required this.onFreeTrialChanged,
     required this.onContinue,
@@ -175,9 +242,7 @@ class PaywallContent extends StatelessWidget {
   final String selectedPlanId;
   final bool freeTrialEnabled;
   final bool isLoading;
-  final bool canClose;
   final VoidCallback onClose;
-  final VoidCallback onReady;
   final ValueChanged<PaywallPlan> onPlanSelected;
   final ValueChanged<bool> onFreeTrialChanged;
   final VoidCallback onContinue;
@@ -193,11 +258,7 @@ class PaywallContent extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: DelayedCloseButton(
-              canClose: canClose,
-              onReady: onReady,
-              onClose: onClose,
-            ),
+            child: DelayedCloseButton(onClose: onClose),
           ),
           const SizedBox(height: 20),
           const PaywallHero(),
@@ -256,47 +317,67 @@ class PaywallContent extends StatelessWidget {
   }
 }
 
-class DelayedCloseButton extends StatelessWidget {
-  const DelayedCloseButton({
-    required this.canClose,
-    required this.onReady,
-    required this.onClose,
-    super.key,
-  });
+class DelayedCloseButton extends StatefulWidget {
+  const DelayedCloseButton({required this.onClose, super.key});
 
-  final bool canClose;
-  final VoidCallback onReady;
   final VoidCallback onClose;
 
   @override
-  Widget build(BuildContext context) {
-    if (canClose) {
-      return SizedBox.square(
-        dimension: 32,
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          icon: const Icon(Icons.close_rounded, size: 22),
-          color: PaywallColors.close,
-          onPressed: onClose,
-        ),
-      );
-    }
+  State<DelayedCloseButton> createState() => _DelayedCloseButtonState();
+}
 
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
-      duration: const Duration(seconds: 5),
-      onEnd: onReady,
-      builder: (context, value, child) {
-        return SizedBox.square(
-          dimension: 22,
-          child: CircularProgressIndicator(
-            value: value,
-            strokeWidth: 1.8,
-            color: PaywallColors.primary,
-            backgroundColor: PaywallColors.cardBorder,
-          ),
-        );
-      },
+class _DelayedCloseButtonState extends State<DelayedCloseButton> {
+  bool _canClose = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 28,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.92, end: 1).animate(animation),
+              child: child,
+            ),
+          );
+        },
+        child: _canClose
+            ? IconButton(
+                key: const ValueKey('close'),
+                padding: EdgeInsets.zero,
+                icon: const Icon(Icons.close_rounded, size: 18),
+                color: PaywallColors.close,
+                onPressed: widget.onClose,
+              )
+            : Center(
+                key: const ValueKey('progress'),
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1),
+                  duration: const Duration(seconds: 5),
+                  onEnd: () {
+                    if (mounted) {
+                      setState(() => _canClose = true);
+                    }
+                  },
+                  builder: (context, value, child) {
+                    return SizedBox.square(
+                      dimension: 20,
+                      child: CircularProgressIndicator(
+                        value: value,
+                        strokeWidth: 1.6,
+                        color: PaywallColors.primary,
+                        backgroundColor: PaywallColors.cardBorder,
+                      ),
+                    );
+                  },
+                ),
+              ),
+      ),
     );
   }
 }
@@ -653,6 +734,7 @@ abstract final class PaywallColors {
   static const background = Color(0xFF1C1C1E);
   static const selectedPlan = Color(0xFF242C37);
   static const text = Colors.white;
+  static const mutedText = Color(0xFFA0A0A5);
   static const close = Color(0xFFA6A6AA);
   static const primary = Color(0xFF3B82F6);
   static const primaryTrack = Color(0xFF3D6096);

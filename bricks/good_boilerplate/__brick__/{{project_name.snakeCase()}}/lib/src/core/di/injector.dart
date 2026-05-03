@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/gemini/gemini_vision_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/localization/cubit/language_cubit.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/network/dio_factory.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/quota/daily_quota_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/revenuecat_service.dart';
@@ -21,19 +23,24 @@ Future<void> configureDependencies(AppConfig config) async {
 
   getIt.registerSingleton<AppConfig>(config);
   final preferences = await SharedPreferences.getInstance();
+  getIt.registerSingleton<LanguageCubit>(LanguageCubit(preferences));
   getIt.registerSingleton<ThemeCubit>(ThemeCubit(preferences));
   getIt.registerSingleton<DailyQuotaService>(DailyQuotaService(preferences));
   getIt.registerLazySingleton<Dio>(() => createDio(config));
+  getIt.registerLazySingleton<GeminiVisionService>(
+    () => GeminiVisionService(config.gemini),
+  );
   getIt.registerLazySingleton<RevenueCatService>(RevenueCatService.new);
   getIt.registerLazySingleton<AdMobService>(() => AdMobService(config.adMob));
   getIt.registerLazySingleton<OnboardingRepository>(
     () => DefaultOnboardingRepository(preferences),
   );
+  getIt.registerFactory(() => OnboardingCubit(getIt<OnboardingRepository>()));
   getIt.registerFactory(
-    () => OnboardingCubit(getIt<OnboardingRepository>()),
-  );
-  getIt.registerFactory(
-    () => ObjectCaptureCubit(getIt<DailyQuotaService>()),
+    () => ObjectCaptureCubit(
+      getIt<DailyQuotaService>(),
+      getIt<GeminiVisionService>(),
+    ),
   );
 
   if (config.enableMonetizationServices) {

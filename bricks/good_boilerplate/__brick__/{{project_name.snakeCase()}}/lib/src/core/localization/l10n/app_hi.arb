@@ -1,0 +1,20 @@
+{
+  "@@locale": "hi",
+  "settingsTitle": "सेटिंग्स",
+  "dailyLimitSection": "दैनिक सीमा",
+  "dailyUsageTitle": "दैनिक उपयोग",
+  "dailyUsageCount": "{used} / {max} उपयोग किए गए",
+  "upgradeUnlimitedAccess": "असीमित पहुंच के लिए अपग्रेड करें",
+  "buyPremium": "Premium खरीदें",
+  "appearanceSection": "रूप",
+  "darkMode": "डार्क मोड",
+  "language": "भाषा",
+  "changeLanguage": "भाषा बदलें",
+  "selectLanguage": "भाषा चुनें",
+  "generalSection": "सामान्य",
+  "rateUs": "हमें रेट करें",
+  "privacyPolicy": "गोपनीयता नीति",
+  "termsOfUse": "उपयोग की शर्तें",
+  "contactUs": "हमसे संपर्क करें",
+  "supportEmailSubject": "सहायता अनुरोध"
+}

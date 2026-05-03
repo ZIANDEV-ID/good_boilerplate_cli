@@ -1,0 +1,20 @@
+{
+  "@@locale": "fil",
+  "settingsTitle": "Mga Setting",
+  "dailyLimitSection": "Pang-araw-araw na Limitasyon",
+  "dailyUsageTitle": "Pang-araw-araw na Paggamit",
+  "dailyUsageCount": "{used} / {max} nagamit",
+  "upgradeUnlimitedAccess": "Mag-upgrade para sa walang limitasyong access",
+  "buyPremium": "Bumili ng Premium",
+  "appearanceSection": "Hitsura",
+  "darkMode": "Dark Mode",
+  "language": "Wika",
+  "changeLanguage": "Baguhin ang Wika",
+  "selectLanguage": "Pumili ng Wika",
+  "generalSection": "Pangkalahatan",
+  "rateUs": "I-rate kami",
+  "privacyPolicy": "Patakaran sa Privacy",
+  "termsOfUse": "Mga Tuntunin sa Paggamit",
+  "contactUs": "Makipag-ugnayan sa amin",
+  "supportEmailSubject": "Kahilingan sa Suporta"
+}

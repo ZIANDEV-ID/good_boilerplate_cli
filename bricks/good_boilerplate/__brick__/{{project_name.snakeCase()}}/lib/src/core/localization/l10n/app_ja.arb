@@ -1,0 +1,20 @@
+{
+  "@@locale": "ja",
+  "settingsTitle": "設定",
+  "dailyLimitSection": "1日の制限",
+  "dailyUsageTitle": "1日の使用量",
+  "dailyUsageCount": "{used} / {max} 使用済み",
+  "upgradeUnlimitedAccess": "無制限アクセスにアップグレード",
+  "buyPremium": "Premiumを購入",
+  "appearanceSection": "外観",
+  "darkMode": "ダークモード",
+  "language": "言語",
+  "changeLanguage": "言語を変更",
+  "selectLanguage": "言語を選択",
+  "generalSection": "一般",
+  "rateUs": "評価する",
+  "privacyPolicy": "プライバシーポリシー",
+  "termsOfUse": "利用規約",
+  "contactUs": "お問い合わせ",
+  "supportEmailSubject": "サポートリクエスト"
+}

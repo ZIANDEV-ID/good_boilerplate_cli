@@ -1,0 +1,20 @@
+{
+  "@@locale": "ms",
+  "settingsTitle": "Tetapan",
+  "dailyLimitSection": "Had Harian",
+  "dailyUsageTitle": "Penggunaan Harian",
+  "dailyUsageCount": "{used} / {max} digunakan",
+  "upgradeUnlimitedAccess": "Naik taraf untuk akses tanpa had",
+  "buyPremium": "Beli Premium",
+  "appearanceSection": "Paparan",
+  "darkMode": "Mod Gelap",
+  "language": "Bahasa",
+  "changeLanguage": "Tukar Bahasa",
+  "selectLanguage": "Pilih Bahasa",
+  "generalSection": "Umum",
+  "rateUs": "Nilai kami",
+  "privacyPolicy": "Dasar Privasi",
+  "termsOfUse": "Terma Penggunaan",
+  "contactUs": "Hubungi Kami",
+  "supportEmailSubject": "Permintaan Sokongan"
+}

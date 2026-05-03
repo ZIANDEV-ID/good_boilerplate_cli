@@ -1,0 +1,20 @@
+{
+  "@@locale": "ar",
+  "settingsTitle": "الإعدادات",
+  "dailyLimitSection": "الحد اليومي",
+  "dailyUsageTitle": "الاستخدام اليومي",
+  "dailyUsageCount": "{used} / {max} مستخدم",
+  "upgradeUnlimitedAccess": "الترقية للوصول غير المحدود",
+  "buyPremium": "شراء Premium",
+  "appearanceSection": "المظهر",
+  "darkMode": "الوضع الداكن",
+  "language": "اللغة",
+  "changeLanguage": "تغيير اللغة",
+  "selectLanguage": "اختر اللغة",
+  "generalSection": "عام",
+  "rateUs": "قيّمنا",
+  "privacyPolicy": "سياسة الخصوصية",
+  "termsOfUse": "شروط الاستخدام",
+  "contactUs": "اتصل بنا",
+  "supportEmailSubject": "طلب دعم"
+}

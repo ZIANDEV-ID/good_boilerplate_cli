@@ -1,0 +1,20 @@
+{
+  "@@locale": "ko",
+  "settingsTitle": "설정",
+  "dailyLimitSection": "일일 한도",
+  "dailyUsageTitle": "일일 사용량",
+  "dailyUsageCount": "{used} / {max} 사용됨",
+  "upgradeUnlimitedAccess": "무제한 액세스를 위해 업그레이드",
+  "buyPremium": "Premium 구매",
+  "appearanceSection": "모양",
+  "darkMode": "다크 모드",
+  "language": "언어",
+  "changeLanguage": "언어 변경",
+  "selectLanguage": "언어 선택",
+  "generalSection": "일반",
+  "rateUs": "평가하기",
+  "privacyPolicy": "개인정보 처리방침",
+  "termsOfUse": "이용 약관",
+  "contactUs": "문의하기",
+  "supportEmailSubject": "지원 요청"
+}

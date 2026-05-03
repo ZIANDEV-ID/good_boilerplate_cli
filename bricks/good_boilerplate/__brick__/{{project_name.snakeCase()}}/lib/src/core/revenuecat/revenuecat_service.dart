@@ -41,11 +41,15 @@ class RevenueCatService {
   }
 
   Future<List<PaywallPlan>> getPaywallPlans() async {
+    if (!_isConfigured) {
+      return dummyPaywallPlans;
+    }
+
     final offering = await getDefaultOffering();
     final packages = offering?.availablePackages ?? const <Package>[];
 
     if (packages.isEmpty) {
-      return dummyPaywallPlans;
+      return const <PaywallPlan>[];
     }
 
     return packages.map(_mapPackageToPlan).toList();
@@ -83,7 +87,9 @@ class RevenueCatService {
 
     return PaywallPlan(
       id: package.identifier,
-      title: hasFreeTrial ? _trialTitle(introductoryPrice) : _packageTitle(package),
+      title: hasFreeTrial
+          ? _trialTitle(introductoryPrice)
+          : _packageTitle(package),
       subtitle: hasFreeTrial
           ? 'then ${product.priceString} ${_billingSuffix(package)}'
           : product.priceString,

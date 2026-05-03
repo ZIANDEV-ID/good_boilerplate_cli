@@ -5,7 +5,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/localization/cubit/language_cubit.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/localization/generated/app_localizations.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/quota/daily_quota_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_typography.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/cubit/theme_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -22,6 +25,10 @@ class SettingsPage extends StatelessWidget {
     final isDarkMode = context.select<ThemeCubit, bool>(
       (cubit) => cubit.isDarkMode,
     );
+    final selectedLanguage = context.select<LanguageCubit, AppLanguage>(
+      (cubit) => cubit.currentLanguage,
+    );
+    final l10n = AppLocalizations.of(context);
     final colors = SettingsColors.fromBrightness(
       isDarkMode ? Brightness.dark : Brightness.light,
     );
@@ -38,7 +45,10 @@ class SettingsPage extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
                 children: [
-                  SettingsSectionTitle(colors: colors, title: 'Daily Limit'),
+                  SettingsSectionTitle(
+                    colors: colors,
+                    title: l10n.dailyLimitSection,
+                  ),
                   const SizedBox(height: 16),
                   DailyLimitSection(
                     colors: colors,
@@ -54,27 +64,39 @@ class SettingsPage extends StatelessWidget {
                         colors: colors,
                         icon: Icons.workspace_premium,
                         iconColor: const Color(0xFFFFD60A),
-                        title: 'Buy Premium',
+                        title: l10n.buyPremium,
                         onTap: () => context.push(AppRoutes.paywall),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SettingsSectionTitle(colors: colors, title: 'Appearance'),
+                  SettingsSectionTitle(
+                    colors: colors,
+                    title: l10n.appearanceSection,
+                  ),
                   const SizedBox(height: 16),
                   SettingsCard(
                     colors: colors,
                     children: [
                       SettingsSwitchTile(
                         colors: colors,
-                        title: 'Dark Mode',
+                        title: l10n.darkMode,
                         value: isDarkMode,
                         onChanged: context.read<ThemeCubit>().setDarkMode,
+                      ),
+                      SettingsValueTile(
+                        colors: colors,
+                        title: l10n.language,
+                        value: selectedLanguage.nativeName,
+                        onTap: () => _showLanguagePicker(context, colors),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SettingsSectionTitle(colors: colors, title: 'General'),
+                  SettingsSectionTitle(
+                    colors: colors,
+                    title: l10n.generalSection,
+                  ),
                   const SizedBox(height: 16),
                   SettingsCard(
                     colors: colors,
@@ -82,26 +104,26 @@ class SettingsPage extends StatelessWidget {
                       SettingsTile(
                         colors: colors,
                         icon: Icons.star_border_rounded,
-                        title: 'Rate us',
+                        title: l10n.rateUs,
                         onTap: () {},
                       ),
                       SettingsTile(
                         colors: colors,
                         icon: Icons.privacy_tip_outlined,
-                        title: 'Privacy Policy',
+                        title: l10n.privacyPolicy,
                         onTap: () => _openUrl(privacyPolicyUrl),
                       ),
                       SettingsTile(
                         colors: colors,
                         icon: Icons.article_outlined,
-                        title: 'Terms of Use',
+                        title: l10n.termsOfUse,
                         onTap: () => _openUrl(termsOfUseUrl),
                       ),
                       SettingsTile(
                         colors: colors,
                         icon: Icons.contact_mail_outlined,
-                        title: 'Contact Us',
-                        onTap: _contactSupport,
+                        title: l10n.contactUs,
+                        onTap: () => _contactSupport(l10n.supportEmailSubject),
                       ),
                     ],
                   ),
@@ -119,13 +141,81 @@ class SettingsPage extends StatelessWidget {
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
-  static Future<void> _contactSupport() async {
+  static Future<void> _contactSupport(String subject) async {
     final uri = Uri(
       scheme: 'mailto',
       path: contactEmail,
-      queryParameters: {'subject': 'Support Request'},
+      queryParameters: {'subject': subject},
     );
     await launchUrl(uri);
+  }
+
+  static Future<void> _showLanguagePicker(
+    BuildContext context,
+    SettingsColors colors,
+  ) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: colors.card,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext);
+
+        return SafeArea(
+          child: BlocBuilder<LanguageCubit, Locale>(
+            builder: (context, locale) {
+              return ListView(
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 4, 12),
+                    child: Text(
+                      l10n.selectLanguage,
+                      style: TextStyle(
+                        color: colors.text,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  for (final language in AppLanguage.values)
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                      leading: Text(
+                        language.flag,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                      title: Text(
+                        language.nativeName,
+                        style: TextStyle(
+                          color: colors.text,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      trailing: locale.languageCode == language.code
+                          ? const Icon(
+                              Icons.check_rounded,
+                              color: Color(0xFF3B82F6),
+                            )
+                          : null,
+                      onTap: () {
+                        sheetContext.read<LanguageCubit>().setLanguage(
+                          language,
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -174,7 +264,7 @@ class DailyLimitSection extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Daily Usage',
+                          AppLocalizations.of(context).dailyUsageTitle,
                           style: TextStyle(
                             color: colors.text,
                             fontSize: 16,
@@ -183,7 +273,7 @@ class DailyLimitSection extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '$used / $max used',
+                        AppLocalizations.of(context).dailyUsageCount(used, max),
                         style: TextStyle(
                           color: colors.mutedText,
                           fontSize: 14,
@@ -206,7 +296,7 @@ class DailyLimitSection extends StatelessWidget {
                   SettingsActionButton(
                     colors: colors,
                     icon: Icons.workspace_premium_rounded,
-                    title: 'Upgrade for Unlimited Access',
+                    title: AppLocalizations.of(context).upgradeUnlimitedAccess,
                     onTap: onUpgrade,
                   ),
                 ],
@@ -247,7 +337,7 @@ class SettingsHeader extends StatelessWidget {
             ),
           ),
           Text(
-            'Settings',
+            AppLocalizations.of(context).settingsTitle,
             style: TextStyle(
               color: colors.text,
               fontSize: 20,
@@ -351,6 +441,67 @@ class SettingsTile extends StatelessWidget {
   }
 }
 
+class SettingsValueTile extends StatelessWidget {
+  const SettingsValueTile({
+    required this.colors,
+    required this.title,
+    required this.value,
+    required this.onTap,
+    super.key,
+  });
+
+  final SettingsColors colors;
+  final String title;
+  final String value;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: onTap,
+      child: SizedBox(
+        height: 56,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: colors.text,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Flexible(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    color: colors.mutedText,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, color: colors.text, size: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SettingsSwitchTile extends StatelessWidget {
   const SettingsSwitchTile({
     required this.colors,
@@ -425,7 +576,11 @@ class SettingsActionButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+          textStyle: TextStyle(
+            fontFamily: AppTypography.fontFamily,
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         icon: Icon(icon, size: 20),
         label: Text(title),

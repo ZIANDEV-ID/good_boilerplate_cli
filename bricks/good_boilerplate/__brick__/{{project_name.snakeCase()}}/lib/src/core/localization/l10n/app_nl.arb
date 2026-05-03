@@ -1,0 +1,20 @@
+{
+  "@@locale": "nl",
+  "settingsTitle": "Instellingen",
+  "dailyLimitSection": "Daglimiet",
+  "dailyUsageTitle": "Dagelijks gebruik",
+  "dailyUsageCount": "{used} / {max} gebruikt",
+  "upgradeUnlimitedAccess": "Upgrade voor onbeperkte toegang",
+  "buyPremium": "Premium kopen",
+  "appearanceSection": "Weergave",
+  "darkMode": "Donkere modus",
+  "language": "Taal",
+  "changeLanguage": "Taal wijzigen",
+  "selectLanguage": "Taal selecteren",
+  "generalSection": "Algemeen",
+  "rateUs": "Beoordeel ons",
+  "privacyPolicy": "Privacybeleid",
+  "termsOfUse": "Gebruiksvoorwaarden",
+  "contactUs": "Contact opnemen",
+  "supportEmailSubject": "Supportverzoek"
+}

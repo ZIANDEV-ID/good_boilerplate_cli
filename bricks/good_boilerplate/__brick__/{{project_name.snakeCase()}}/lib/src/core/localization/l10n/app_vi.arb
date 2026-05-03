@@ -1,0 +1,20 @@
+{
+  "@@locale": "vi",
+  "settingsTitle": "Cài đặt",
+  "dailyLimitSection": "Giới hạn hằng ngày",
+  "dailyUsageTitle": "Mức dùng hằng ngày",
+  "dailyUsageCount": "Đã dùng {used} / {max}",
+  "upgradeUnlimitedAccess": "Nâng cấp để truy cập không giới hạn",
+  "buyPremium": "Mua Premium",
+  "appearanceSection": "Giao diện",
+  "darkMode": "Chế độ tối",
+  "language": "Ngôn ngữ",
+  "changeLanguage": "Đổi ngôn ngữ",
+  "selectLanguage": "Chọn ngôn ngữ",
+  "generalSection": "Chung",
+  "rateUs": "Đánh giá chúng tôi",
+  "privacyPolicy": "Chính sách quyền riêng tư",
+  "termsOfUse": "Điều khoản sử dụng",
+  "contactUs": "Liên hệ",
+  "supportEmailSubject": "Yêu cầu hỗ trợ"
+}

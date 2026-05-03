@@ -8,7 +8,7 @@ enum ObjectCaptureStatus {
   analyzing,
   success,
   failure,
-  noQuota
+  noQuota,
 }
 
 class ObjectCaptureState {
@@ -29,12 +29,16 @@ class ObjectCaptureState {
     String? errorMessage,
     int? remainingQuota,
     String? result,
+    bool clearErrorMessage = false,
+    bool clearResult = false,
   }) {
     return ObjectCaptureState(
       status: status ?? this.status,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: clearErrorMessage
+          ? null
+          : errorMessage ?? this.errorMessage,
       remainingQuota: remainingQuota ?? this.remainingQuota,
-      result: result ?? this.result,
+      result: clearResult ? null : result ?? this.result,
     );
   }
 }

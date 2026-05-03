@@ -1,0 +1,20 @@
+{
+  "@@locale": "th",
+  "settingsTitle": "การตั้งค่า",
+  "dailyLimitSection": "ขีดจำกัดรายวัน",
+  "dailyUsageTitle": "การใช้งานรายวัน",
+  "dailyUsageCount": "ใช้แล้ว {used} / {max}",
+  "upgradeUnlimitedAccess": "อัปเกรดเพื่อเข้าถึงแบบไม่จำกัด",
+  "buyPremium": "ซื้อ Premium",
+  "appearanceSection": "ลักษณะที่ปรากฏ",
+  "darkMode": "โหมดมืด",
+  "language": "ภาษา",
+  "changeLanguage": "เปลี่ยนภาษา",
+  "selectLanguage": "เลือกภาษา",
+  "generalSection": "ทั่วไป",
+  "rateUs": "ให้คะแนนเรา",
+  "privacyPolicy": "นโยบายความเป็นส่วนตัว",
+  "termsOfUse": "ข้อกำหนดการใช้งาน",
+  "contactUs": "ติดต่อเรา",
+  "supportEmailSubject": "คำขอรับการสนับสนุน"
+}

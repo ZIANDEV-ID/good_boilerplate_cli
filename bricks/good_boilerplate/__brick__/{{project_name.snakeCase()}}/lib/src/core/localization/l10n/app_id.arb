@@ -1,0 +1,20 @@
+{
+  "@@locale": "id",
+  "settingsTitle": "Pengaturan",
+  "dailyLimitSection": "Batas Harian",
+  "dailyUsageTitle": "Pemakaian Harian",
+  "dailyUsageCount": "{used} / {max} terpakai",
+  "upgradeUnlimitedAccess": "Upgrade untuk Akses Tanpa Batas",
+  "buyPremium": "Beli Premium",
+  "appearanceSection": "Tampilan",
+  "darkMode": "Mode Gelap",
+  "language": "Bahasa",
+  "changeLanguage": "Ubah Bahasa",
+  "selectLanguage": "Pilih Bahasa",
+  "generalSection": "Umum",
+  "rateUs": "Beri Rating",
+  "privacyPolicy": "Kebijakan Privasi",
+  "termsOfUse": "Ketentuan Penggunaan",
+  "contactUs": "Hubungi Kami",
+  "supportEmailSubject": "Permintaan Dukungan"
+}

@@ -12,21 +12,18 @@ Future<void> run(HookContext context) async {
 
   context.logger.info('Creating Flutter platform folders...');
 
-  final flutterCreate = await Process.run(
-    'flutter',
-    [
-      'create',
-      '--project-name',
-      projectName,
-      '--org',
-      orgName,
-      '--description',
-      description,
-      '--platforms',
-      'android,ios,web,macos',
-      projectDir.path,
-    ],
-  );
+  final flutterCreate = await Process.run('flutter', [
+    'create',
+    '--project-name',
+    projectName,
+    '--org',
+    orgName,
+    '--description',
+    description,
+    '--platforms',
+    'android,ios,web,macos',
+    projectDir.path,
+  ]);
 
   if (flutterCreate.exitCode != 0) {
     context.logger.err('Flutter platform folder generation failed.');
@@ -48,6 +45,8 @@ Future<void> run(HookContext context) async {
     );
     await _patchAndroidConcurrentFuturesDependency(projectDir);
     await _patchAdMobMetadata(projectDir);
+    await _patchAppPermissions(projectDir);
+    await _generateLocalizations(context, projectDir);
     context.logger.success('Flutter platform folders created.');
   }
 
@@ -85,8 +84,9 @@ String _orgFromAppId(String appId) {
 }
 
 String _lowerCamelCase(String value) {
-  final words =
-      _snakeCase(value).split('_').where((word) => word.isNotEmpty).toList();
+  final words = _snakeCase(
+    value,
+  ).split('_').where((word) => word.isNotEmpty).toList();
 
   if (words.isEmpty) return 'myApp';
 
@@ -126,15 +126,11 @@ Future<void> _patchNativeMetadata({
 
   await _replaceInFile(
     File('${projectDir.path}/android/app/build.gradle.kts'),
-    {
-      createdAndroidId: appId,
-    },
+    {createdAndroidId: appId},
   );
   await _replaceInFile(
     File('${projectDir.path}/android/app/src/main/AndroidManifest.xml'),
-    {
-      'android:label="$projectName"': 'android:label="$appName"',
-    },
+    {'android:label="$projectName"': 'android:label="$appName"'},
   );
   await _patchAndroidMainActivity(
     projectDir: projectDir,
@@ -148,15 +144,12 @@ Future<void> _patchNativeMetadata({
       createdAppleId: appId,
     },
   );
-  await _replaceInFile(
-    File('${projectDir.path}/ios/Runner/Info.plist'),
-    {
-      '<key>CFBundleDisplayName</key>\n\t<string>$createdTitle</string>':
-          '<key>CFBundleDisplayName</key>\n\t<string>$appName</string>',
-      '<key>CFBundleName</key>\n\t<string>$projectName</string>':
-          '<key>CFBundleName</key>\n\t<string>$appName</string>',
-    },
-  );
+  await _replaceInFile(File('${projectDir.path}/ios/Runner/Info.plist'), {
+    '<key>CFBundleDisplayName</key>\n\t<string>$createdTitle</string>':
+        '<key>CFBundleDisplayName</key>\n\t<string>$appName</string>',
+    '<key>CFBundleName</key>\n\t<string>$projectName</string>':
+        '<key>CFBundleName</key>\n\t<string>$appName</string>',
+  });
   await _replaceInFile(
     File('${projectDir.path}/macos/Runner/Configs/AppInfo.xcconfig'),
     {
@@ -178,30 +171,19 @@ Future<void> _patchNativeMetadata({
     File(
       '${projectDir.path}/macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme',
     ),
-    {
-      '$projectName.app': '$appName.app',
-    },
+    {'$projectName.app': '$appName.app'},
   );
-  await _replaceInFile(
-    File('${projectDir.path}/web/manifest.json'),
-    {
-      '"name": "$projectName"': '"name": "$appName"',
-      '"short_name": "$projectName"': '"short_name": "$appName"',
-    },
-  );
-  await _replaceInFile(
-    File('${projectDir.path}/web/index.html'),
-    {
-      'content="$projectName"': 'content="$appName"',
-      '<title>$projectName</title>': '<title>$appName</title>',
-    },
-  );
+  await _replaceInFile(File('${projectDir.path}/web/manifest.json'), {
+    '"name": "$projectName"': '"name": "$appName"',
+    '"short_name": "$projectName"': '"short_name": "$appName"',
+  });
+  await _replaceInFile(File('${projectDir.path}/web/index.html'), {
+    'content="$projectName"': 'content="$appName"',
+    '<title>$projectName</title>': '<title>$appName</title>',
+  });
 }
 
-Future<void> _replaceInFile(
-  File file,
-  Map<String, String> replacements,
-) async {
+Future<void> _replaceInFile(File file, Map<String, String> replacements) async {
   if (!await file.exists()) return;
 
   var content = await file.readAsString();
@@ -227,10 +209,7 @@ Future<void> _patchAndroidMainActivity({
   if (!await sourceFile.exists()) return;
 
   var content = await sourceFile.readAsString();
-  content = content.replaceAll(
-    'package $createdAndroidId',
-    'package $appId',
-  );
+  content = content.replaceAll('package $createdAndroidId', 'package $appId');
 
   final targetFile = File(targetPath);
   await targetFile.parent.create(recursive: true);
@@ -246,7 +225,82 @@ Future<void> _patchAdMobMetadata(Directory projectDir) async {
   await _patchIosAdMobAppId(projectDir);
 }
 
-Future<void> _patchAndroidConcurrentFuturesDependency(Directory projectDir) async {
+Future<void> _generateLocalizations(
+  HookContext context,
+  Directory projectDir,
+) async {
+  context.logger.info('Generating Flutter localizations...');
+
+  final result = await Process.run('flutter', [
+    'gen-l10n',
+  ], workingDirectory: projectDir.path);
+
+  if (result.exitCode != 0) {
+    context.logger.err('Flutter localization generation failed.');
+    context.logger.err('${result.stderr}');
+    context.logger.info(
+      'Run this manually from the output folder: '
+      'cd ${projectDir.path} && flutter gen-l10n',
+    );
+    return;
+  }
+
+  context.logger.success('Flutter localizations generated.');
+}
+
+Future<void> _patchAppPermissions(Directory projectDir) async {
+  await _patchAndroidPermissions(projectDir);
+  await _patchIosPermissions(projectDir);
+}
+
+Future<void> _patchAndroidPermissions(Directory projectDir) async {
+  final manifest = File(
+    '${projectDir.path}/android/app/src/main/AndroidManifest.xml',
+  );
+
+  if (!await manifest.exists()) return;
+
+  var content = await manifest.readAsString();
+  if (!content.contains('android.permission.CAMERA')) {
+    content = content.replaceFirst(
+      '<manifest xmlns:android="http://schemas.android.com/apk/res/android">',
+      '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n'
+          '    <uses-permission android:name="android.permission.CAMERA" />',
+    );
+  }
+
+  await manifest.writeAsString(content);
+}
+
+Future<void> _patchIosPermissions(Directory projectDir) async {
+  final infoPlist = File('${projectDir.path}/ios/Runner/Info.plist');
+
+  if (!await infoPlist.exists()) return;
+
+  var content = await infoPlist.readAsString();
+  if (!content.contains('NSCameraUsageDescription')) {
+    content = content.replaceFirst(
+      '</dict>',
+      '\t<key>NSCameraUsageDescription</key>\n'
+          '\t<string>This app needs camera access to capture images for analysis.</string>\n'
+          '</dict>',
+    );
+  }
+  if (!content.contains('NSPhotoLibraryUsageDescription')) {
+    content = content.replaceFirst(
+      '</dict>',
+      '\t<key>NSPhotoLibraryUsageDescription</key>\n'
+          '\t<string>This app needs photo library access to pick images for analysis.</string>\n'
+          '</dict>',
+    );
+  }
+
+  await infoPlist.writeAsString(content);
+}
+
+Future<void> _patchAndroidConcurrentFuturesDependency(
+  Directory projectDir,
+) async {
   final gradleFile = File('${projectDir.path}/android/build.gradle.kts');
 
   if (!await gradleFile.exists()) return;

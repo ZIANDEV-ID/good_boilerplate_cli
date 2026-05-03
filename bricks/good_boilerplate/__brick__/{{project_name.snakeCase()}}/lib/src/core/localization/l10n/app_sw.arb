@@ -1,0 +1,20 @@
+{
+  "@@locale": "sw",
+  "settingsTitle": "Mipangilio",
+  "dailyLimitSection": "Kikomo cha Kila Siku",
+  "dailyUsageTitle": "Matumizi ya Kila Siku",
+  "dailyUsageCount": "{used} / {max} zimetumika",
+  "upgradeUnlimitedAccess": "Boresha kwa ufikiaji usio na kikomo",
+  "buyPremium": "Nunua Premium",
+  "appearanceSection": "Mwonekano",
+  "darkMode": "Hali Nyeusi",
+  "language": "Lugha",
+  "changeLanguage": "Badilisha Lugha",
+  "selectLanguage": "Chagua Lugha",
+  "generalSection": "Jumla",
+  "rateUs": "Tukadirie",
+  "privacyPolicy": "Sera ya Faragha",
+  "termsOfUse": "Masharti ya Matumizi",
+  "contactUs": "Wasiliana Nasi",
+  "supportEmailSubject": "Ombi la Usaidizi"
+}

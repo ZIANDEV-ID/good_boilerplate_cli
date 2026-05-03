@@ -1,0 +1,20 @@
+{
+  "@@locale": "zh",
+  "settingsTitle": "设置",
+  "dailyLimitSection": "每日限制",
+  "dailyUsageTitle": "每日使用量",
+  "dailyUsageCount": "已使用 {used} / {max}",
+  "upgradeUnlimitedAccess": "升级以获得无限访问",
+  "buyPremium": "购买 Premium",
+  "appearanceSection": "外观",
+  "darkMode": "深色模式",
+  "language": "语言",
+  "changeLanguage": "更改语言",
+  "selectLanguage": "选择语言",
+  "generalSection": "通用",
+  "rateUs": "给我们评分",
+  "privacyPolicy": "隐私政策",
+  "termsOfUse": "使用条款",
+  "contactUs": "联系我们",
+  "supportEmailSubject": "支持请求"
+}

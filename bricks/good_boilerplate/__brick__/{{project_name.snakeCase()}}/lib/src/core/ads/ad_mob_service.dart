@@ -20,6 +20,11 @@ class AdMobService {
     }
 
     try {
+      if (_config.testDeviceIds.isNotEmpty) {
+        await MobileAds.instance.updateRequestConfiguration(
+          RequestConfiguration(testDeviceIds: _config.testDeviceIds),
+        );
+      }
       await MobileAds.instance.initialize();
       _isInitialized = true;
     } catch (error, stackTrace) {
@@ -100,9 +105,7 @@ class AdMobService {
     return true;
   }
 
-  Future<void> loadRewardedAd({
-    AdRequest request = const AdRequest(),
-  }) async {
+  Future<void> loadRewardedAd({AdRequest request = const AdRequest()}) async {
     if (!_config.hasRewardedAdUnitId) {
       return;
     }
@@ -146,9 +149,7 @@ class AdMobService {
         loadRewardedAd();
       },
     );
-    ad.show(
-      onUserEarnedReward: (_, reward) => onUserEarnedReward(reward),
-    );
+    ad.show(onUserEarnedReward: (_, reward) => onUserEarnedReward(reward));
     return true;
   }
 

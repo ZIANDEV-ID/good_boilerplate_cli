@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart' as permissions;
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
 import '../cubit/object_capture_cubit.dart';
@@ -20,6 +21,9 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
   CameraController? _controller;
   List<CameraDescription>? _cameras;
   final ImagePicker _imagePicker = ImagePicker();
+  bool _isCameraPermissionDenied = false;
+  bool _isCameraPermissionPermanentlyDenied = false;
+  bool _isRequestingCameraPermission = false;
   bool _isFlashEnabled = false;
 
   @override
@@ -29,24 +33,76 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
   }
 
   Future<void> _initializeCamera() async {
-    _cameras = await availableCameras();
-    if (_cameras != null && _cameras!.isNotEmpty) {
+    if (mounted) {
+      setState(() => _isRequestingCameraPermission = true);
+    }
+
+    final status = await permissions.Permission.camera.request();
+    if (!status.isGranted) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isCameraPermissionDenied = true;
+        _isCameraPermissionPermanentlyDenied =
+            status.isPermanentlyDenied || status.isRestricted;
+        _isRequestingCameraPermission = false;
+      });
+      return;
+    }
+
+    try {
+      _cameras = await availableCameras();
+      if (_cameras == null || _cameras!.isEmpty) {
+        if (mounted) {
+          setState(() => _isRequestingCameraPermission = false);
+        }
+        return;
+      }
+
+      await _controller?.dispose();
       _controller = CameraController(
         _cameras![0],
         ResolutionPreset.high,
         enableAudio: false,
       );
 
-      try {
-        await _controller!.initialize();
-        if (mounted) {
-          context.read<ObjectCaptureCubit>().onCameraReady();
-          setState(() {});
-        }
-      } catch (e) {
-        debugPrint('Camera Error: $e');
+      await _controller!.initialize();
+      if (!mounted) {
+        return;
       }
+
+      context.read<ObjectCaptureCubit>().onCameraReady();
+      setState(() {
+        _isCameraPermissionDenied = false;
+        _isCameraPermissionPermanentlyDenied = false;
+        _isRequestingCameraPermission = false;
+      });
+    } catch (e) {
+      debugPrint('Camera Error: $e');
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isCameraPermissionDenied = true;
+        _isRequestingCameraPermission = false;
+      });
     }
+  }
+
+  Future<void> _requestCameraPermission() async {
+    if (_isRequestingCameraPermission) {
+      return;
+    }
+
+    if (_isCameraPermissionPermanentlyDenied) {
+      await permissions.openAppSettings();
+      return;
+    }
+
+    await _initializeCamera();
   }
 
   Future<void> _pickFromGallery() async {
@@ -94,6 +150,40 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
     await cubit.startAnalysis(imagePath: pickedFile.path);
   }
 
+  Future<void> _captureAndAnalyze() async {
+    final controller = _controller;
+    if (controller == null || !controller.value.isInitialized) {
+      return;
+    }
+
+    try {
+      final image = await controller.takePicture();
+      if (!mounted) {
+        return;
+      }
+
+      await context.read<ObjectCaptureCubit>().startAnalysis(
+        imagePath: image.path,
+      );
+    } catch (e) {
+      debugPrint('Capture Error: $e');
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Gagal mengambil gambar. Coba lagi.'),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _toggleFlash() async {
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
@@ -122,6 +212,14 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
   }
 
   Widget _buildCameraPreview() {
+    if (_isCameraPermissionDenied) {
+      return CameraPermissionDeniedView(
+        isRequesting: _isRequestingCameraPermission,
+        isPermanentlyDenied: _isCameraPermissionPermanentlyDenied,
+        onRequestPermission: _requestCameraPermission,
+      );
+    }
+
     final controller = _controller;
     if (controller == null || !controller.value.isInitialized) {
       return const Center(
@@ -148,6 +246,8 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasCameraPermission = !_isCameraPermissionDenied;
+
     return BlocListener<ObjectCaptureCubit, ObjectCaptureState>(
       listener: (context, state) {
         if (state.status == ObjectCaptureStatus.success &&
@@ -175,6 +275,17 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
               ),
             ),
           );
+        } else if (state.status == ObjectCaptureStatus.failure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'Analisis gagal. Coba lagi.'),
+              backgroundColor: Colors.red.shade700,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         }
       },
       child: Scaffold(
@@ -184,116 +295,114 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
             // Camera Preview
             _buildCameraPreview(),
 
-            // Top Bar
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 25,
-              left: 20,
-              right: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      _CameraTopIconButton(
-                        icon: _isFlashEnabled
-                            ? Icons.flash_on_rounded
-                            : Icons.flash_off_rounded,
-                        onTap: _toggleFlash,
-                      ),
-                      const SizedBox(width: 10),
-                      _CameraTopIconButton(
-                        icon: Icons.settings_rounded,
-                        onTap: () => context.push(AppRoutes.settings),
-                      ),
-                    ],
-                  ),
-                  BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
-                    builder: (context, state) {
-                      if (state.remainingQuota > 0) {
-                        return _DailyLimitText(
-                          remainingQuota: state.remainingQuota,
-                        );
-                      }
-
-                      return _PremiumButton(
-                        onTap: () => context.push(AppRoutes.paywall),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Bottom Controls: Gallery | Capture | (placeholder)
-            Positioned(
-              bottom: 55,
-              left: 0,
-              right: 0,
-              child: BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
-                builder: (context, state) {
-                  final isAnalyzing =
-                      state.status == ObjectCaptureStatus.analyzing;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+            if (hasCameraPermission)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 25,
+                left: 20,
+                right: 20,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        // Gallery Button
-                        _GalleryButton(
-                          onTap: isAnalyzing ? null : _pickFromGallery,
+                        _CameraTopIconButton(
+                          icon: _isFlashEnabled
+                              ? Icons.flash_on_rounded
+                              : Icons.flash_off_rounded,
+                          onTap: _toggleFlash,
                         ),
-
-                        // Capture Button
-                        GestureDetector(
-                          onTap: isAnalyzing
-                              ? null
-                              : () => context
-                                    .read<ObjectCaptureCubit>()
-                                    .startAnalysis(),
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            padding: const EdgeInsets.all(8),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: isAnalyzing
-                                  ? const Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.black,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                          ),
+                        const SizedBox(width: 10),
+                        _CameraTopIconButton(
+                          icon: Icons.settings_rounded,
+                          onTap: () => context.push(AppRoutes.settings),
                         ),
-
-                        // Spacer (symmetrical with gallery button)
-                        const SizedBox(width: 56),
                       ],
                     ),
-                  );
-                },
+                    BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
+                      builder: (context, state) {
+                        if (state.remainingQuota > 0) {
+                          return _DailyLimitText(
+                            remainingQuota: state.remainingQuota,
+                          );
+                        }
+
+                        return _PremiumButton(
+                          onTap: () => context.push(AppRoutes.paywall),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
+
+            // Bottom Controls: Gallery | Capture | (placeholder)
+            if (hasCameraPermission)
+              Positioned(
+                bottom: 55,
+                left: 0,
+                right: 0,
+                child: BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
+                  builder: (context, state) {
+                    final isAnalyzing =
+                        state.status == ObjectCaptureStatus.analyzing;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Gallery Button
+                          _GalleryButton(
+                            onTap: isAnalyzing ? null : _pickFromGallery,
+                          ),
+
+                          // Capture Button
+                          GestureDetector(
+                            onTap: isAnalyzing ? null : _captureAndAnalyze,
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              padding: const EdgeInsets.all(8),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: isAnalyzing
+                                    ? const Center(
+                                        child: CircularProgressIndicator(
+                                          color: Colors.black,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                            ),
+                          ),
+
+                          // Spacer (symmetrical with gallery button)
+                          const SizedBox(width: 56),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
 
             // Analyzing Overlay
-            BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
-              builder: (context, state) {
-                if (state.status == ObjectCaptureStatus.analyzing) {
-                  return const AnalyzingOverlay();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+            if (hasCameraPermission)
+              BlocBuilder<ObjectCaptureCubit, ObjectCaptureState>(
+                builder: (context, state) {
+                  if (state.status == ObjectCaptureStatus.analyzing) {
+                    return const AnalyzingOverlay();
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
           ],
         ),
       ),
@@ -319,14 +428,96 @@ class _GalleryButton extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: Colors.white12,
+            color: Colors.white,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white30, width: 1.5),
+            border: Border.all(color: Colors.white, width: 1.5),
           ),
           child: const Icon(
             Icons.photo_library_outlined,
             color: AppColors.primary,
             size: 26,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraPermissionDeniedView extends StatelessWidget {
+  const CameraPermissionDeniedView({
+    required this.isRequesting,
+    required this.isPermanentlyDenied,
+    required this.onRequestPermission,
+    super.key,
+  });
+
+  final bool isRequesting;
+  final bool isPermanentlyDenied;
+  final VoidCallback onRequestPermission;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.black,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.camera_alt_outlined,
+                color: Colors.white,
+                size: 56,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Camera permission is required',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Allow camera access to capture and analyze images.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: isRequesting ? null : onRequestPermission,
+                  child: isRequesting
+                      ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : Text(
+                          isPermanentlyDenied
+                              ? 'Open Settings'
+                              : 'Allow Camera Access',
+                        ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

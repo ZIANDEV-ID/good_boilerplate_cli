@@ -1,0 +1,30 @@
+{
+  "@@locale": "en",
+  "settingsTitle": "Settings",
+  "dailyLimitSection": "Daily Limit",
+  "dailyUsageTitle": "Daily Usage",
+  "dailyUsageCount": "{used} / {max} used",
+  "@dailyUsageCount": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "upgradeUnlimitedAccess": "Upgrade for Unlimited Access",
+  "buyPremium": "Buy Premium",
+  "appearanceSection": "Appearance",
+  "darkMode": "Dark Mode",
+  "language": "Language",
+  "changeLanguage": "Change Language",
+  "selectLanguage": "Select Language",
+  "generalSection": "General",
+  "rateUs": "Rate us",
+  "privacyPolicy": "Privacy Policy",
+  "termsOfUse": "Terms of Use",
+  "contactUs": "Contact Us",
+  "supportEmailSubject": "Support Request"
+}

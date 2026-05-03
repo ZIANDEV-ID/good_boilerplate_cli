@@ -1,0 +1,20 @@
+{
+  "@@locale": "it",
+  "settingsTitle": "Impostazioni",
+  "dailyLimitSection": "Limite giornaliero",
+  "dailyUsageTitle": "Utilizzo giornaliero",
+  "dailyUsageCount": "{used} / {max} usati",
+  "upgradeUnlimitedAccess": "Passa all'accesso illimitato",
+  "buyPremium": "Acquista Premium",
+  "appearanceSection": "Aspetto",
+  "darkMode": "Modalità scura",
+  "language": "Lingua",
+  "changeLanguage": "Cambia lingua",
+  "selectLanguage": "Seleziona lingua",
+  "generalSection": "Generale",
+  "rateUs": "Valutaci",
+  "privacyPolicy": "Informativa sulla privacy",
+  "termsOfUse": "Termini di utilizzo",
+  "contactUs": "Contattaci",
+  "supportEmailSubject": "Richiesta di supporto"
+}

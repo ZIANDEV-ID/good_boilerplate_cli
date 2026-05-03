@@ -1,0 +1,20 @@
+{
+  "@@locale": "tr",
+  "settingsTitle": "Ayarlar",
+  "dailyLimitSection": "Günlük Limit",
+  "dailyUsageTitle": "Günlük Kullanım",
+  "dailyUsageCount": "{used} / {max} kullanıldı",
+  "upgradeUnlimitedAccess": "Sınırsız erişim için yükselt",
+  "buyPremium": "Premium Satın Al",
+  "appearanceSection": "Görünüm",
+  "darkMode": "Koyu Mod",
+  "language": "Dil",
+  "changeLanguage": "Dili Değiştir",
+  "selectLanguage": "Dil Seç",
+  "generalSection": "Genel",
+  "rateUs": "Bizi değerlendir",
+  "privacyPolicy": "Gizlilik Politikası",
+  "termsOfUse": "Kullanım Şartları",
+  "contactUs": "Bize Ulaşın",
+  "supportEmailSubject": "Destek Talebi"
+}

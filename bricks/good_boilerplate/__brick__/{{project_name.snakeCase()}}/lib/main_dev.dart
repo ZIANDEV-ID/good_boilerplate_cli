@@ -10,6 +10,10 @@ void main() {
       baseApiUrl: 'https://dev-api.example.com',
       enableNetworkLogs: true,
       enableUpgradeCheck: true,
+      gemini: GeminiConfig(
+        apiKey: 'REPLACE_WITH_GEMINI_DEV_API_KEY',
+        prompt: GeminiConfig.defaultPrompt,
+      ),
       revenueCat: RevenueCatConfig(
         apiKey: 'REPLACE_WITH_REVENUECAT_DEV_API_KEY',
       ),

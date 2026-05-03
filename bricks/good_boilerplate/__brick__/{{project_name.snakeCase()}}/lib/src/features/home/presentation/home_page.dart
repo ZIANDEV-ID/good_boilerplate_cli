@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_banner.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 
@@ -27,26 +28,24 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(title: Text(config.appName)),
+      bottomNavigationBar: const SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 8),
+          child: Center(heightFactor: 1, child: AdMobBanner()),
+        ),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Ready to build.',
-                style: textTheme.headlineSmall,
-              ),
+              Text('Ready to build.', style: textTheme.headlineSmall),
               const SizedBox(height: 8),
-              Text(
-                'Flavor: ${config.flavor.name}',
-                style: textTheme.bodyLarge,
-              ),
+              Text('Flavor: ${config.flavor.name}', style: textTheme.bodyLarge),
               const SizedBox(height: 8),
-              Text(
-                'App ID: ${config.appId}',
-                style: textTheme.bodyMedium,
-              ),
+              Text('App ID: ${config.appId}', style: textTheme.bodyMedium),
               const SizedBox(height: 8),
               Text(
                 'Base API URL: ${config.baseApiUrl}',

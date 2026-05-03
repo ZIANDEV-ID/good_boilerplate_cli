@@ -1,0 +1,20 @@
+{
+  "@@locale": "ru",
+  "settingsTitle": "Настройки",
+  "dailyLimitSection": "Дневной лимит",
+  "dailyUsageTitle": "Использование за день",
+  "dailyUsageCount": "{used} / {max} использовано",
+  "upgradeUnlimitedAccess": "Обновите для безлимитного доступа",
+  "buyPremium": "Купить Premium",
+  "appearanceSection": "Внешний вид",
+  "darkMode": "Темный режим",
+  "language": "Язык",
+  "changeLanguage": "Изменить язык",
+  "selectLanguage": "Выберите язык",
+  "generalSection": "Общие",
+  "rateUs": "Оцените нас",
+  "privacyPolicy": "Политика конфиденциальности",
+  "termsOfUse": "Условия использования",
+  "contactUs": "Связаться с нами",
+  "supportEmailSubject": "Запрос в поддержку"
+}
