@@ -479,7 +479,8 @@ class SettingsValueTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Flexible(
+              SizedBox(
+                width: 120,
                 child: Text(
                   value,
                   maxLines: 1,

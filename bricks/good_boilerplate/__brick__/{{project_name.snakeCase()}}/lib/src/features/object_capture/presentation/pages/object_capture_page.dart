@@ -110,6 +110,10 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
     final currentState = cubit.state;
 
     if (currentState.status == ObjectCaptureStatus.analyzing) return;
+    if (currentState.remainingQuota <= 0) {
+      context.push(AppRoutes.paywall);
+      return;
+    }
 
     final XFile? pickedFile = await _imagePicker.pickImage(
       source: ImageSource.gallery,
@@ -119,34 +123,6 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
     if (pickedFile == null) return;
     if (!mounted) return;
 
-    // Show snackbar confirming image selected, then trigger analysis
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(
-              Icons.check_circle_outline,
-              color: Colors.white,
-              size: 18,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Gambar dipilih: ${pickedFile.name}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green.shade700,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-
-    // Trigger analysis (passing path to cubit – currently used for future real API)
     await cubit.startAnalysis(imagePath: pickedFile.path);
   }
 
@@ -259,22 +235,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
             onReset: () => context.read<ObjectCaptureCubit>().reset(),
           );
         } else if (state.status == ObjectCaptureStatus.noQuota) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Icons.block, color: Colors.white, size: 18),
-                  SizedBox(width: 8),
-                  Text('Kamu telah mencapai batas harian.'),
-                ],
-              ),
-              backgroundColor: Colors.red.shade700,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          );
+          context.push(AppRoutes.paywall);
         } else if (state.status == ObjectCaptureStatus.failure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -364,18 +325,18 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
                               width: 80,
                               padding: const EdgeInsets.all(8),
                               decoration: const BoxDecoration(
-                                color: AppColors.primary,
+                                color: Colors.white,
                                 shape: BoxShape.circle,
                               ),
                               child: Container(
                                 decoration: const BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 child: isAnalyzing
                                     ? const Center(
                                         child: CircularProgressIndicator(
-                                          color: Colors.black,
+                                          color: Colors.white,
                                           strokeWidth: 2,
                                         ),
                                       )

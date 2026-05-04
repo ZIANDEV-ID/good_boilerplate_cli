@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_banner.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 
@@ -19,6 +20,44 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getIt<OnboardingRepository>().markCompleted();
+  }
+
+  Future<void> _showInterstitialAd() async {
+    final didShow = await getIt<AdMobService>().showInterstitialAd();
+    if (!mounted) {
+      return;
+    }
+
+    _showMessage(
+      didShow
+          ? 'Interstitial ad shown.'
+          : 'Interstitial ad is still loading. Tap again in a moment.',
+    );
+  }
+
+  Future<void> _showRewardedAd() async {
+    final didShow = await getIt<AdMobService>().showRewardedAd(
+      onUserEarnedReward: (reward) {
+        if (!mounted) {
+          return;
+        }
+
+        _showMessage('Reward earned: ${reward.amount} ${reward.type}');
+      },
+    );
+    if (!mounted) {
+      return;
+    }
+
+    if (!didShow) {
+      _showMessage('Rewarded ad is still loading. Tap again in a moment.');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -68,6 +107,16 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 onPressed: () => context.push(AppRoutes.settings),
                 child: const Text('Open Settings'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _showInterstitialAd,
+                child: const Text('Show Interstitial Ad'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _showRewardedAd,
+                child: const Text('Show Rewarded Ad'),
               ),
             ],
           ),
