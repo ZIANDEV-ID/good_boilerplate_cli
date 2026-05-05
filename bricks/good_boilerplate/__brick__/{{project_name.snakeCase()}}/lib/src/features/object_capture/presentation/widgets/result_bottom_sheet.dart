@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
+
 class ResultBottomSheet extends StatelessWidget {
   final String result;
   final int remainingQuota;
@@ -17,7 +19,7 @@ class ResultBottomSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: Column(
@@ -41,19 +43,22 @@ class ResultBottomSheet extends StatelessWidget {
               Text(
                 'Analysis Result',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   'Quota: $remainingQuota left',
                   style: const TextStyle(
-                    color: Colors.blue,
+                    color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                   ),
@@ -65,9 +70,9 @@ class ResultBottomSheet extends StatelessWidget {
           Text(
             result,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  height: 1.5,
-                  color: Colors.grey[800],
-                ),
+              height: 1.5,
+              color: AppColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 32),
           SizedBox(
@@ -78,11 +83,11 @@ class ResultBottomSheet extends StatelessWidget {
                 onReset();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 elevation: 0,
               ),

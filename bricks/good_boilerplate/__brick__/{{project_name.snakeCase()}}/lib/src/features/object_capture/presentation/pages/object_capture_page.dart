@@ -250,7 +250,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.darkBackground,
         body: Stack(
           children: [
             // Camera Preview
@@ -325,7 +325,7 @@ class _ObjectCapturePageState extends State<ObjectCapturePage> {
                               width: 80,
                               padding: const EdgeInsets.all(8),
                               decoration: const BoxDecoration(
-                                color: Colors.white,
+                                color: AppColors.surface,
                                 shape: BoxShape.circle,
                               ),
                               child: Container(
@@ -389,9 +389,16 @@ class _GalleryButton extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 1.5),
+            border: Border.all(color: AppColors.border, width: 1.5),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 18,
+                offset: Offset(0, 10),
+              ),
+            ],
           ),
           child: const Icon(
             Icons.photo_library_outlined,
@@ -419,7 +426,7 @@ class CameraPermissionDeniedView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: Colors.black,
+      color: AppColors.darkBackground,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -459,7 +466,7 @@ class CameraPermissionDeniedView extends StatelessWidget {
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                   ),
                   onPressed: isRequesting ? null : onRequestPermission,
@@ -500,7 +507,7 @@ class _CameraTopIconButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: Colors.black45,
+          color: AppColors.darkSurface.withValues(alpha: 0.72),
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white24),
         ),
@@ -522,24 +529,24 @@ class _PremiumButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         decoration: BoxDecoration(
-          color: Colors.black45,
+          color: AppColors.darkSurface.withValues(alpha: 0.72),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: const Color(0xFFFFD60A).withValues(alpha: 0.5),
+            color: AppColors.accentButter.withValues(alpha: 0.5),
           ),
         ),
         child: const Row(
           children: [
             Icon(
               Icons.workspace_premium_rounded,
-              color: Color(0xFFFFD60A),
+              color: AppColors.accentButter,
               size: 18,
             ),
             SizedBox(width: 6),
             Text(
               'Get Premium',
               style: TextStyle(
-                color: Color(0xFFFFD60A),
+                color: AppColors.accentButter,
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
               ),
@@ -561,7 +568,7 @@ class _DailyLimitText extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
-        color: Colors.black45,
+        color: AppColors.darkSurface.withValues(alpha: 0.72),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: Colors.white24),
       ),

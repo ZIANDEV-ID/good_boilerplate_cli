@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
+
 class AnalyzingOverlay extends StatefulWidget {
   const AnalyzingOverlay({super.key});
 
@@ -19,10 +21,10 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.1, end: 0.9).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    _animation = Tween<double>(
+      begin: 0.1,
+      end: 0.9,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -49,7 +51,7 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.cyanAccent.withValues(alpha: 0.8),
+                        color: AppColors.accentSky.withValues(alpha: 0.85),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -57,7 +59,7 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
                     gradient: LinearGradient(
                       colors: [
                         Colors.transparent,
-                        Colors.cyanAccent,
+                        AppColors.accentSky,
                         Colors.transparent,
                       ],
                     ),
@@ -71,16 +73,18 @@ class _AnalyzingOverlayState extends State<AnalyzingOverlay>
               mainAxisSize: MainAxisSize.min,
               children: [
                 const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.cyanAccent),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    AppColors.accentSky,
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Text(
                   'Analyzing Object...',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                      ),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ],
             ),

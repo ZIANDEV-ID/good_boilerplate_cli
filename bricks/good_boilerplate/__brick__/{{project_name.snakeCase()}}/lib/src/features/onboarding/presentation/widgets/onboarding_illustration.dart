@@ -43,7 +43,7 @@ class _OnboardingIllustrationPainter extends CustomPainter {
     final width = endX - startX;
     final paint = Paint()
       ..shader = const LinearGradient(
-        colors: [Color(0xFF0EA5E9), Color(0xFF22D3EE)],
+        colors: [AppColors.accentSky, AppColors.accentLilac],
       ).createShader(Rect.fromLTWH(startX, 0, width, size.height))
       ..style = PaintingStyle.fill;
     final highlight = Paint()
@@ -110,10 +110,10 @@ class _OnboardingIllustrationPainter extends CustomPainter {
   }
 
   void _paintPhonePatterns(Canvas canvas, Size size) {
-    final blobPaint = Paint()..color = AppColors.primary;
-    final shadowPaint = Paint()..color = const Color(0xFF0F62D6);
-    final phonePaint = Paint()..color = const Color(0xFF2D5B6A);
-    final sidePaint = Paint()..color = const Color(0xFF9ED7F4);
+    final blobPaint = Paint()..color = AppColors.primarySoft;
+    final shadowPaint = Paint()..color = AppColors.shadow;
+    final phonePaint = Paint()..color = AppColors.textPrimary;
+    final sidePaint = Paint()..color = AppColors.accentSky;
     final strokePaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.stroke
@@ -192,15 +192,15 @@ class _OnboardingIllustrationPainter extends CustomPainter {
   }
 
   void _paintSpeakerTest(Canvas canvas, Size size) {
-    final blobPaint = Paint()..color = AppColors.primary;
+    final blobPaint = Paint()..color = AppColors.secondarySoft;
     final blackStroke = Paint()
-      ..color = Colors.black
+      ..color = AppColors.textPrimary
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
     final fillWhite = Paint()..color = Colors.white;
-    final accent = Paint()..color = const Color(0xFF1682FF);
+    final accent = Paint()..color = AppColors.accentLilac;
 
     final blob = Path()
       ..moveTo(size.width * 0.18, size.height * 0.55)
@@ -282,7 +282,7 @@ class _OnboardingIllustrationPainter extends CustomPainter {
         width: size.width * 0.03,
         height: size.height * 0.08,
       ),
-      Paint()..color = Colors.black,
+      Paint()..color = AppColors.textPrimary,
     );
 
     final hand = Path()

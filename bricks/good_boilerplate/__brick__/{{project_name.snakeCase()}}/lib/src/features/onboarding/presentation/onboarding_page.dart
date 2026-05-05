@@ -44,7 +44,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         final slide = state.slides[state.currentIndex];
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.background,
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
@@ -71,7 +71,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   OnboardingPrimaryButton(
                     text: slide.buttonText,
                     onPressed: () {
-                     if (state.isLastSlide) {
+                      if (state.isLastSlide) {
                         context.go(AppRoutes.paywall);
                         return;
                       }
@@ -119,7 +119,7 @@ class OnboardingStepper extends StatelessWidget {
                 height: 2,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
-                  color: isActive ? AppColors.primary : const Color(0xFFF1F1F1),
+                  color: isActive ? AppColors.primary : AppColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -134,7 +134,7 @@ class OnboardingStepper extends StatelessWidget {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: isActive ? AppColors.primary : const Color(0xFFF3F3F3),
+              color: isActive ? AppColors.primary : AppColors.secondarySoft,
               shape: BoxShape.circle,
             ),
           );
@@ -177,10 +177,24 @@ class OnboardingSlideContent extends StatelessWidget {
               fontSize: isCompact ? 14 : 16,
             ),
             SizedBox(height: imageTopSpacing),
-            SizedBox(
-              height: imageHeight,
-              width: double.infinity,
-              child: OnboardingIllustration(type: slide.illustrationType),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.border),
+                boxShadow: const [
+                  BoxShadow(
+                    color: AppColors.shadow,
+                    blurRadius: 28,
+                    offset: Offset(0, 16),
+                  ),
+                ],
+              ),
+              child: SizedBox(
+                height: imageHeight,
+                width: double.infinity,
+                child: OnboardingIllustration(type: slide.illustrationType),
+              ),
             ),
           ],
         );
@@ -207,9 +221,9 @@ class OnboardingHeadline extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: Colors.black,
+        color: AppColors.textPrimary,
         fontSize: fontSize,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         height: 1.25,
       ),
     );
@@ -234,7 +248,7 @@ class OnboardingSubheadline extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: TextStyle(
-        color: Colors.black,
+        color: AppColors.textSecondary,
         fontSize: fontSize,
         fontWeight: FontWeight.w400,
         height: 1.35,
@@ -263,10 +277,9 @@ class OnboardingPrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          elevation: 3,
-          shadowColor: Colors.black.withValues(alpha: 0.24),
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
         child: Text(
@@ -291,7 +304,7 @@ class TrustedInfo extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       textAlign: TextAlign.center,
       style: const TextStyle(
-        color: Colors.black,
+        color: AppColors.textSecondary,
         fontSize: 14,
         fontWeight: FontWeight.w400,
       ),

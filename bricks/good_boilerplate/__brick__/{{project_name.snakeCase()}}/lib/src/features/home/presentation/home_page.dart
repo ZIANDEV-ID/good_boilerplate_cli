@@ -6,6 +6,7 @@ import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_banner.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 
 class HomePage extends StatefulWidget {
@@ -80,47 +81,151 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Ready to build.', style: textTheme.headlineSmall),
-              const SizedBox(height: 8),
-              Text('Flavor: ${config.flavor.name}', style: textTheme.bodyLarge),
-              const SizedBox(height: 8),
-              Text('App ID: ${config.appId}', style: textTheme.bodyMedium),
-              const SizedBox(height: 8),
-              Text(
-                'Base API URL: ${config.baseApiUrl}',
-                style: textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: () => context.push(AppRoutes.objectCapture),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 54),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: AppColors.shadow,
+                      blurRadius: 28,
+                      offset: Offset(0, 16),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: AppColors.primarySoft,
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: const Icon(
+                              Icons.auto_awesome_rounded,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              'Ready to build.',
+                              style: textTheme.headlineSmall,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 18),
+                      _InfoPill(label: 'Flavor', value: config.flavor.name),
+                      const SizedBox(height: 10),
+                      _InfoPill(label: 'App ID', value: config.appId),
+                      const SizedBox(height: 10),
+                      _InfoPill(
+                        label: 'Base API URL',
+                        value: config.baseApiUrl,
+                      ),
+                    ],
                   ),
                 ),
-                child: const Text('Capture Object'),
+              ),
+              const SizedBox(height: 24),
+              _HomeActionButton(
+                icon: Icons.camera_alt_rounded,
+                text: 'Capture Object',
+                onPressed: () => context.push(AppRoutes.objectCapture),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(
+              _HomeActionButton(
+                icon: Icons.tune_rounded,
+                text: 'Open Settings',
                 onPressed: () => context.push(AppRoutes.settings),
-                child: const Text('Open Settings'),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(
+              _HomeActionButton(
+                icon: Icons.ad_units_rounded,
+                text: 'Show Interstitial Ad',
                 onPressed: _showInterstitialAd,
-                child: const Text('Show Interstitial Ad'),
               ),
               const SizedBox(height: 12),
-              ElevatedButton(
+              _HomeActionButton(
+                icon: Icons.card_giftcard_rounded,
+                text: 'Show Rewarded Ad',
                 onPressed: _showRewardedAd,
-                child: const Text('Show Rewarded Ad'),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _InfoPill extends StatelessWidget {
+  const _InfoPill({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceTint,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Text.rich(
+        TextSpan(
+          text: '$label: ',
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+          children: [
+            TextSpan(
+              text: value,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+}
+
+class _HomeActionButton extends StatelessWidget {
+  const _HomeActionButton({
+    required this.icon,
+    required this.text,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 54,
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 20),
+        label: Text(text),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/localization/cubit/language_cubit.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/localization/generated/app_localizations.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/quota/daily_quota_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/app_typography.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/cubit/theme_cubit.dart';
 
@@ -63,7 +64,7 @@ class SettingsPage extends StatelessWidget {
                       SettingsTile(
                         colors: colors,
                         icon: Icons.workspace_premium,
-                        iconColor: const Color(0xFFFFD60A),
+                        iconColor: AppColors.accentButter,
                         title: l10n.buyPremium,
                         onTap: () => context.push(AppRoutes.paywall),
                       ),
@@ -199,7 +200,7 @@ class SettingsPage extends StatelessWidget {
                       trailing: locale.languageCode == language.code
                           ? const Icon(
                               Icons.check_rounded,
-                              color: Color(0xFF3B82F6),
+                              color: AppColors.primary,
                             )
                           : null,
                       onTap: () {
@@ -258,7 +259,7 @@ class DailyLimitSection extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.timelapse_rounded,
-                        color: const Color(0xFF3B82F6),
+                        color: AppColors.primary,
                         size: 24,
                       ),
                       const SizedBox(width: 12),
@@ -288,7 +289,7 @@ class DailyLimitSection extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: progress,
                       minHeight: 8,
-                      color: const Color(0xFF3B82F6),
+                      color: AppColors.primary,
                       backgroundColor: colors.divider,
                     ),
                   ),
@@ -384,7 +385,9 @@ class SettingsCard extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: colors.card,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.divider),
+        boxShadow: colors.shadows,
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
@@ -539,8 +542,8 @@ class SettingsSwitchTile extends StatelessWidget {
             ),
             Switch(
               value: value,
-              activeThumbColor: const Color(0xFF3B82F6),
-              activeTrackColor: const Color(0xFF3B82F6).withValues(alpha: 0.6),
+              activeThumbColor: AppColors.primary,
+              activeTrackColor: AppColors.primarySoft,
               onChanged: onChanged,
             ),
           ],
@@ -571,11 +574,11 @@ class SettingsActionButton extends StatelessWidget {
       height: 48,
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFD60A),
-          foregroundColor: const Color(0xFF111827),
+          backgroundColor: AppColors.accentButter,
+          foregroundColor: AppColors.textPrimary,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
           ),
           textStyle: TextStyle(
             fontFamily: AppTypography.fontFamily,
@@ -599,27 +602,36 @@ class SettingsColors {
     required this.mutedText,
     required this.icon,
     required this.divider,
+    required this.shadows,
   });
 
   factory SettingsColors.fromBrightness(Brightness brightness) {
     if (brightness == Brightness.dark) {
       return const SettingsColors(
-        background: Color(0xFF1C1C1E),
-        card: Color(0xFF2C2C2E),
+        background: AppColors.darkBackground,
+        card: AppColors.darkSurface,
         text: Colors.white,
-        mutedText: Color(0xFF7D7D83),
+        mutedText: Color(0xFFC3B9B5),
         icon: Colors.white,
-        divider: Color(0xFF38383A),
+        divider: Color(0xFF453C39),
+        shadows: [],
       );
     }
 
     return const SettingsColors(
-      background: Color(0xFFF7F8FA),
-      card: Colors.white,
-      text: Color(0xFF111827),
-      mutedText: Color(0xFF7C8493),
-      icon: Color(0xFF111827),
-      divider: Color(0xFFE5E7EB),
+      background: AppColors.background,
+      card: AppColors.surface,
+      text: AppColors.textPrimary,
+      mutedText: AppColors.textSecondary,
+      icon: AppColors.textPrimary,
+      divider: AppColors.border,
+      shadows: [
+        BoxShadow(
+          color: AppColors.shadow,
+          blurRadius: 24,
+          offset: Offset(0, 14),
+        ),
+      ],
     );
   }
 
@@ -629,4 +641,5 @@ class SettingsColors {
   final Color mutedText;
   final Color icon;
   final Color divider;
+  final List<BoxShadow> shadows;
 }

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/paywall_plan.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/revenuecat_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
 
 class PaywallPage extends StatefulWidget {
   const PaywallPage({super.key});
@@ -387,11 +388,23 @@ class PaywallHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        Icon(Icons.volume_up_outlined, color: PaywallColors.primary, size: 64),
-        SizedBox(height: 10),
-        Text(
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: const Icon(
+            Icons.volume_up_outlined,
+            color: PaywallColors.primary,
+            size: 52,
+          ),
+        ),
+        const SizedBox(height: 14),
+        const Text(
           'Unlimited Access',
           textAlign: TextAlign.center,
           style: TextStyle(
@@ -500,21 +513,32 @@ class PaywallPlanTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         constraints: const BoxConstraints(minHeight: 72),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? PaywallColors.selectedPlan : Colors.transparent,
-          borderRadius: BorderRadius.circular(10),
+          color: isSelected
+              ? PaywallColors.selectedPlan
+              : AppColors.surfaceTint,
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
                 ? PaywallColors.primary
                 : PaywallColors.cardBorder,
             width: 1.5,
           ),
+          boxShadow: isSelected
+              ? const [
+                  BoxShadow(
+                    color: AppColors.shadow,
+                    blurRadius: 24,
+                    offset: Offset(0, 14),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           children: [
@@ -666,7 +690,7 @@ class PaywallContinueButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: PaywallColors.primaryButton,
-          foregroundColor: PaywallColors.text,
+          foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -731,14 +755,14 @@ class PaywallFooterLink extends StatelessWidget {
 }
 
 abstract final class PaywallColors {
-  static const background = Color(0xFF1C1C1E);
-  static const selectedPlan = Color(0xFF242C37);
-  static const text = Colors.white;
-  static const mutedText = Color(0xFFA0A0A5);
-  static const close = Color(0xFFA6A6AA);
-  static const primary = Color(0xFF3B82F6);
-  static const primaryTrack = Color(0xFF3D6096);
-  static const primaryButton = Color(0xFF5DA2F6);
-  static const cardBorder = Color(0xFFA0A0A5);
-  static const discount = Color(0xFFFF453A);
+  static const background = AppColors.background;
+  static const selectedPlan = AppColors.surface;
+  static const text = AppColors.textPrimary;
+  static const mutedText = AppColors.textSecondary;
+  static const close = AppColors.textSecondary;
+  static const primary = AppColors.primary;
+  static const primaryTrack = AppColors.primarySoft;
+  static const primaryButton = AppColors.primary;
+  static const cardBorder = AppColors.border;
+  static const discount = AppColors.secondary;
 }
