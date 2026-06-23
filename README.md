@@ -14,7 +14,7 @@ mason get
 From this Mason workspace:
 
 ```sh
-cd /Users/zianfahrudy/Documents/good_boilerplate_cli
+cd /Users/zianfahrudy/Documents/ZIANDEV/good_boilerplate_cli
 mason get
 mason make good_boilerplate -q
 ```
@@ -43,7 +43,7 @@ mason add -g good_boilerplate
 To use the local brick from any directory before publishing, register it globally once:
 
 ```sh
-mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/good_boilerplate
+mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/ZIANDEV/good_boilerplate_cli/bricks/good_boilerplate
 ```
 
 Then run from the target output folder:

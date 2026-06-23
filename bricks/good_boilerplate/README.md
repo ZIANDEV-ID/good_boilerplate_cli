@@ -24,7 +24,7 @@ mason add -g good_boilerplate
 Or register the local brick globally before publishing:
 
 ```sh
-mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/good_boilerplate_cli/bricks/good_boilerplate
+mason add -g good_boilerplate --path /Users/zianfahrudy/Documents/ZIANDEV/good_boilerplate_cli/bricks/good_boilerplate
 ```
 
 Then run from any target output folder:
