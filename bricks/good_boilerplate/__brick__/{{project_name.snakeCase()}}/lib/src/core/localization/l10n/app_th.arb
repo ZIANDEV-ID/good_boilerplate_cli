@@ -11,6 +11,8 @@
   "language": "ภาษา",
   "changeLanguage": "เปลี่ยนภาษา",
   "selectLanguage": "เลือกภาษา",
+  "feedbackSection": "ความคิดเห็น",
+  "sendFeedback": "ส่งความคิดเห็น",
   "generalSection": "ทั่วไป",
   "rateUs": "ให้คะแนนเรา",
   "privacyPolicy": "นโยบายความเป็นส่วนตัว",

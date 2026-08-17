@@ -10,12 +10,19 @@ void main() {
       baseApiUrl: 'https://api.example.com',
       enableNetworkLogs: false,
       enableUpgradeCheck: true,
+      enableCodePush: true,
       gemini: GeminiConfig(
         apiKey: 'REPLACE_WITH_GEMINI_PROD_API_KEY',
         prompt: GeminiConfig.defaultPrompt,
       ),
       revenueCat: RevenueCatConfig(
         apiKey: 'REPLACE_WITH_REVENUECAT_PROD_API_KEY',
+        offeringIdentifier: 'default',
+        promoOfferingIdentifier: 'promo_offer',
+      ),
+      wiredash: WiredashConfig(
+        projectId: 'REPLACE_WITH_WIREDASH_PROD_PROJECT_ID',
+        secret: 'REPLACE_WITH_WIREDASH_PROD_SECRET',
       ),
       adMob: AdMobConfig(
         bannerAdUnitId: 'ca-app-pub-3940256099942544/6300978111',

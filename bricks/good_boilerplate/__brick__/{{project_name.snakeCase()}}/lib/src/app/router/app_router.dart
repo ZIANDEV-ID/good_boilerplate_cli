@@ -14,6 +14,7 @@ abstract final class AppRoutes {
   static const onboarding = '/';
   static const home = '/home';
   static const paywall = '/paywall';
+  static const promoPaywall = '/paywall?promo=true';
   static const settings = '/settings';
   static const objectCapture = '/object-capture';
 }
@@ -41,7 +42,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.paywall,
-      builder: (context, state) => const PaywallPage(),
+      builder: (context, state) => PaywallPage(
+        usePromoOffering: state.uri.queryParameters['promo'] == 'true',
+      ),
     ),
     GoRoute(
       path: AppRoutes.settings,

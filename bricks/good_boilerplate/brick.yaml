@@ -7,7 +7,7 @@ repository: https://github.com/ZIANDEV-ID/good_boilerplate_cli
 # The following defines the version and build number for your brick.
 # A version number is three numbers separated by dots, like 1.2.34
 # followed by an optional build number (separated by a +).
-version: 0.1.0+1
+version: 0.3.0+1
 
 # The following defines the environment for the current brick.
 # It includes the version of mason that the brick requires.
@@ -45,3 +45,11 @@ vars:
     description: The pubspec description for the generated project.
     default: A new Flutter application.
     prompt: What is the project description?
+  theme_style:
+    type: enum
+    description: The visual style used by the generated application.
+    default: soft_pastel
+    prompt: Which theme style should the generated app use?
+    values:
+      - soft_pastel
+      - neubrutalism

@@ -47,6 +47,7 @@ Future<void> run(HookContext context) async {
     await _patchAdMobMetadata(projectDir);
     await _patchAppPermissions(projectDir);
     await _generateLocalizations(context, projectDir);
+    await _formatGeneratedDart(context, projectDir);
     context.logger.success('Flutter platform folders created.');
   }
 
@@ -248,6 +249,25 @@ Future<void> _generateLocalizations(
   context.logger.success('Flutter localizations generated.');
 }
 
+Future<void> _formatGeneratedDart(
+  HookContext context,
+  Directory projectDir,
+) async {
+  final result = await Process.run('dart', [
+    'format',
+    'lib',
+    'test',
+  ], workingDirectory: projectDir.path);
+
+  if (result.exitCode != 0) {
+    context.logger.warn('Dart formatting failed.');
+    context.logger.warn('${result.stderr}');
+    return;
+  }
+
+  context.logger.success('Generated Dart files formatted.');
+}
+
 Future<void> _patchAppPermissions(Directory projectDir) async {
   await _patchAndroidPermissions(projectDir);
   await _patchIosPermissions(projectDir);
@@ -261,6 +281,13 @@ Future<void> _patchAndroidPermissions(Directory projectDir) async {
   if (!await manifest.exists()) return;
 
   var content = await manifest.readAsString();
+  if (!content.contains('android.permission.INTERNET')) {
+    content = content.replaceFirst(
+      '<manifest xmlns:android="http://schemas.android.com/apk/res/android">',
+      '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n'
+          '    <uses-permission android:name="android.permission.INTERNET" />',
+    );
+  }
   if (!content.contains('android.permission.CAMERA')) {
     content = content.replaceFirst(
       '<manifest xmlns:android="http://schemas.android.com/apk/res/android">',

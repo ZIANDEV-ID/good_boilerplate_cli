@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:wiredash/wiredash.dart';
 
+import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/localization/cubit/language_cubit.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/localization/generated/app_localizations.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/quota/daily_quota_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
-import 'package:{{project_name.snakeCase()}}/src/core/theme/app_typography.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_primary_button.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/cubit/theme_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -96,6 +98,24 @@ class SettingsPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   SettingsSectionTitle(
                     colors: colors,
+                    title: l10n.feedbackSection,
+                  ),
+                  const SizedBox(height: 16),
+                  SettingsCard(
+                    colors: colors,
+                    children: [
+                      SettingsTile(
+                        colors: colors,
+                        icon: Icons.feedback_outlined,
+                        iconColor: AppColors.secondary,
+                        title: l10n.sendFeedback,
+                        onTap: () => _openFeedback(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SettingsSectionTitle(
+                    colors: colors,
                     title: l10n.generalSection,
                   ),
                   const SizedBox(height: 16),
@@ -149,6 +169,22 @@ class SettingsPage extends StatelessWidget {
       queryParameters: {'subject': subject},
     );
     await launchUrl(uri);
+  }
+
+  static Future<void> _openFeedback(BuildContext context) async {
+    final config = getIt<AppConfig>().wiredash;
+    if (!config.hasCredentials) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Configure Wiredash projectId and secret to enable feedback.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    await Wiredash.of(context).show(inheritMaterialTheme: true);
   }
 
   static Future<void> _showLanguagePicker(
@@ -295,7 +331,6 @@ class DailyLimitSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   SettingsActionButton(
-                    colors: colors,
                     icon: Icons.workspace_premium_rounded,
                     title: AppLocalizations.of(context).upgradeUnlimitedAccess,
                     onTap: onUpgrade,
@@ -555,41 +590,23 @@ class SettingsSwitchTile extends StatelessWidget {
 
 class SettingsActionButton extends StatelessWidget {
   const SettingsActionButton({
-    required this.colors,
     required this.icon,
     required this.title,
     required this.onTap,
     super.key,
   });
 
-  final SettingsColors colors;
   final IconData icon;
   final String title;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accentButter,
-          foregroundColor: AppColors.textPrimary,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          textStyle: TextStyle(
-            fontFamily: AppTypography.fontFamily,
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        icon: Icon(icon, size: 20),
-        label: Text(title),
-        onPressed: onTap,
-      ),
+    return AppPrimaryButton(
+      label: title,
+      icon: icon,
+      backgroundColor: AppColors.accentButter,
+      onPressed: onTap,
     );
   }
 }

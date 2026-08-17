@@ -6,12 +6,15 @@ import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/paywall_plan.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/revenuecat/revenuecat_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_primary_button.dart';
 
 class PaywallPage extends StatefulWidget {
-  const PaywallPage({super.key});
+  const PaywallPage({this.usePromoOffering = false, super.key});
 
   static const privacyPolicyUrl = 'https://example.com/privacy-policy';
   static const termsOfUseUrl = 'https://example.com/terms-of-use';
+
+  final bool usePromoOffering;
 
   @override
   State<PaywallPage> createState() => _PaywallPageState();
@@ -25,7 +28,9 @@ class _PaywallPageState extends State<PaywallPage> {
   @override
   void initState() {
     super.initState();
-    _plansFuture = getIt<RevenueCatService>().getPaywallPlans();
+    _plansFuture = getIt<RevenueCatService>().getPaywallPlans(
+      promotional: widget.usePromoOffering,
+    );
   }
 
   @override
@@ -684,21 +689,10 @@ class PaywallContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: PaywallColors.primaryButton,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-        ),
-        onPressed: onPressed,
-        child: Text(text),
-      ),
+    return AppPrimaryButton(
+      label: text,
+      backgroundColor: PaywallColors.primaryButton,
+      onPressed: onPressed,
     );
   }
 }

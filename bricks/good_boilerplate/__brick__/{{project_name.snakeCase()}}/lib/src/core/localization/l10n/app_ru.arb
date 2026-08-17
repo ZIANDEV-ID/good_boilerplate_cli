@@ -11,6 +11,8 @@
   "language": "Язык",
   "changeLanguage": "Изменить язык",
   "selectLanguage": "Выберите язык",
+  "feedbackSection": "Обратная связь",
+  "sendFeedback": "Отправить отзыв",
   "generalSection": "Общие",
   "rateUs": "Оцените нас",
   "privacyPolicy": "Политика конфиденциальности",

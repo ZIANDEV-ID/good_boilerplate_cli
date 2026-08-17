@@ -8,10 +8,12 @@ class AppConfig {
     required this.baseApiUrl,
     required this.enableNetworkLogs,
     required this.enableUpgradeCheck,
+    this.enableCodePush = true,
     this.enableMonetizationServices = true,
     this.gemini = const GeminiConfig(),
     this.revenueCat = const RevenueCatConfig(),
     this.adMob = const AdMobConfig(),
+    this.wiredash = const WiredashConfig(),
   });
 
   final AppFlavor flavor;
@@ -20,10 +22,12 @@ class AppConfig {
   final String baseApiUrl;
   final bool enableNetworkLogs;
   final bool enableUpgradeCheck;
+  final bool enableCodePush;
   final bool enableMonetizationServices;
   final GeminiConfig gemini;
   final RevenueCatConfig revenueCat;
   final AdMobConfig adMob;
+  final WiredashConfig wiredash;
 
   bool get isDev => flavor == AppFlavor.dev;
   bool get isProd => flavor == AppFlavor.prod;
@@ -60,13 +64,31 @@ class RevenueCatConfig {
   const RevenueCatConfig({
     this.apiKey = 'REPLACE_WITH_REVENUECAT_API_KEY',
     this.offeringIdentifier = 'default',
+    this.promoOfferingIdentifier = 'promo_offer',
   });
 
   final String apiKey;
   final String offeringIdentifier;
+  final String promoOfferingIdentifier;
 
   bool get hasApiKey =>
       apiKey.trim().isNotEmpty && !apiKey.startsWith('REPLACE_WITH_');
+}
+
+class WiredashConfig {
+  const WiredashConfig({
+    this.projectId = 'REPLACE_WITH_WIREDASH_PROJECT_ID',
+    this.secret = 'REPLACE_WITH_WIREDASH_SECRET',
+  });
+
+  final String projectId;
+  final String secret;
+
+  bool get hasCredentials => _hasValue(projectId) && _hasValue(secret);
+
+  static bool _hasValue(String value) {
+    return value.trim().isNotEmpty && !value.startsWith('REPLACE_WITH_');
+  }
 }
 
 class AdMobConfig {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
+{{#theme_style_soft_pastel}}
   static const seed = Color(0xFF78A497);
   static const primary = Color(0xFF78A497);
   static const primaryPressed = Color(0xFF5F8D80);
@@ -19,4 +20,25 @@ abstract final class AppColors {
   static const shadow = Color(0x1F8C6E62);
   static const darkBackground = Color(0xFF24201F);
   static const darkSurface = Color(0xFF302B2A);
+{{/theme_style_soft_pastel}}
+{{#theme_style_neubrutalism}}
+  static const seed = Color(0xFFFFDC58);
+  static const primary = Color(0xFFFFDC58);
+  static const primaryPressed = Color(0xFFE8BF32);
+  static const primarySoft = Color(0xFFFFF0A6);
+  static const secondary = Color(0xFFFF6B9A);
+  static const secondarySoft = Color(0xFFFFB9CF);
+  static const accentSky = Color(0xFF66D9EF);
+  static const accentLilac = Color(0xFFA78BFA);
+  static const accentButter = Color(0xFFFFDC58);
+  static const background = Color(0xFFFFF7E8);
+  static const surface = Color(0xFFFFFFFF);
+  static const surfaceTint = Color(0xFFC7F9CC);
+  static const textPrimary = Color(0xFF111111);
+  static const textSecondary = Color(0xFF3B3B3B);
+  static const border = Color(0xFF111111);
+  static const shadow = Color(0xFF111111);
+  static const darkBackground = Color(0xFF171717);
+  static const darkSurface = Color(0xFF292929);
+{{/theme_style_neubrutalism}}
 }

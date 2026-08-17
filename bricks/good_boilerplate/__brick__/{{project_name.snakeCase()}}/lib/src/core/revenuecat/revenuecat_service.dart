@@ -30,22 +30,32 @@ class RevenueCatService {
     return Purchases.getOfferings();
   }
 
-  Future<Offering?> getDefaultOffering() async {
+  Future<Offering?> getOffering({bool promotional = false}) async {
     final offerings = await getOfferings();
     if (offerings == null) {
       return null;
     }
 
-    final identifier = _config?.offeringIdentifier ?? 'default';
+    final identifier = promotional
+        ? (_config?.promoOfferingIdentifier ?? 'promo_offer')
+        : (_config?.offeringIdentifier ?? 'default');
     return offerings.all[identifier] ?? offerings.current;
   }
 
-  Future<List<PaywallPlan>> getPaywallPlans() async {
+  Future<Offering?> getDefaultOffering() {
+    return getOffering();
+  }
+
+  Future<Offering?> getPromoOffering() {
+    return getOffering(promotional: true);
+  }
+
+  Future<List<PaywallPlan>> getPaywallPlans({bool promotional = false}) async {
     if (!_isConfigured) {
       return dummyPaywallPlans;
     }
 
-    final offering = await getDefaultOffering();
+    final offering = await getOffering(promotional: promotional);
     final packages = offering?.availablePackages ?? const <Package>[];
 
     if (packages.isEmpty) {

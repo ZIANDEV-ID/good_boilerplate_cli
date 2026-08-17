@@ -11,6 +11,8 @@
   "language": "언어",
   "changeLanguage": "언어 변경",
   "selectLanguage": "언어 선택",
+  "feedbackSection": "피드백",
+  "sendFeedback": "피드백 보내기",
   "generalSection": "일반",
   "rateUs": "평가하기",
   "privacyPolicy": "개인정보 처리방침",

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_service.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/code_push/shorebird_code_push_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/gemini/gemini_vision_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/localization/cubit/language_cubit.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/network/dio_factory.dart';
@@ -26,6 +27,9 @@ Future<void> configureDependencies(AppConfig config) async {
   getIt.registerSingleton<LanguageCubit>(LanguageCubit(preferences));
   getIt.registerSingleton<ThemeCubit>(ThemeCubit(preferences));
   getIt.registerSingleton<DailyQuotaService>(DailyQuotaService(preferences));
+  getIt.registerLazySingleton<ShorebirdCodePushService>(
+    ShorebirdCodePushService.new,
+  );
   getIt.registerLazySingleton<Dio>(() => createDio(config));
   getIt.registerLazySingleton<GeminiVisionService>(
     () => GeminiVisionService(config.gemini),

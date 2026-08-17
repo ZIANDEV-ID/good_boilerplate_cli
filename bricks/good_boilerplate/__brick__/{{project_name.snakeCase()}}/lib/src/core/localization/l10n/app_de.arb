@@ -11,6 +11,8 @@
   "language": "Sprache",
   "changeLanguage": "Sprache ändern",
   "selectLanguage": "Sprache auswählen",
+  "feedbackSection": "Feedback",
+  "sendFeedback": "Feedback senden",
   "generalSection": "Allgemein",
   "rateUs": "Bewerte uns",
   "privacyPolicy": "Datenschutzrichtlinie",

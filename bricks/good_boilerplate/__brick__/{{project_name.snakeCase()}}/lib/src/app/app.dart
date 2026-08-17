@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:upgrader/upgrader.dart';
+import 'package:wiredash/wiredash.dart';
 
 import 'package:{{project_name.snakeCase()}}/src/app/app_config.dart';
 import 'package:{{project_name.snakeCase()}}/src/app/router/app_router.dart';
@@ -18,7 +19,7 @@ class {{project_name.pascalCase()}} extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    final app = MultiBlocProvider(
       providers: [
         BlocProvider.value(value: getIt<ThemeCubit>()),
         BlocProvider.value(value: getIt<LanguageCubit>()),
@@ -47,13 +48,27 @@ class {{project_name.pascalCase()}} extends StatelessWidget {
                     return child ?? const SizedBox.shrink();
                   }
 
-                  return UpgradeAlert(child: child ?? const SizedBox.shrink());
+                  return UpgradeAlert(
+                    navigatorKey: appRouter.routerDelegate.navigatorKey,
+                    child: child ?? const SizedBox.shrink(),
+                  );
                 },
               );
             },
           );
         },
       ),
+    );
+
+    if (!config.wiredash.hasCredentials) {
+      return app;
+    }
+
+    return Wiredash(
+      projectId: config.wiredash.projectId,
+      secret: config.wiredash.secret,
+      environment: config.flavor.name,
+      child: app,
     );
   }
 }

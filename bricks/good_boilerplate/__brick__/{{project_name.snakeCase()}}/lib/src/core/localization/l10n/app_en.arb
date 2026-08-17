@@ -21,6 +21,8 @@
   "language": "Language",
   "changeLanguage": "Change Language",
   "selectLanguage": "Select Language",
+  "feedbackSection": "Feedback",
+  "sendFeedback": "Send Feedback",
   "generalSection": "General",
   "rateUs": "Rate us",
   "privacyPolicy": "Privacy Policy",

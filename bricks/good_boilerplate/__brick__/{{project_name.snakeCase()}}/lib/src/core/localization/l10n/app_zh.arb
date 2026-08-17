@@ -11,6 +11,8 @@
   "language": "语言",
   "changeLanguage": "更改语言",
   "selectLanguage": "选择语言",
+  "feedbackSection": "反馈",
+  "sendFeedback": "发送反馈",
   "generalSection": "通用",
   "rateUs": "给我们评分",
   "privacyPolicy": "隐私政策",

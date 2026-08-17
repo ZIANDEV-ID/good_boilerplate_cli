@@ -11,6 +11,8 @@
   "language": "言語",
   "changeLanguage": "言語を変更",
   "selectLanguage": "言語を選択",
+  "feedbackSection": "フィードバック",
+  "sendFeedback": "フィードバックを送信",
   "generalSection": "一般",
   "rateUs": "評価する",
   "privacyPolicy": "プライバシーポリシー",

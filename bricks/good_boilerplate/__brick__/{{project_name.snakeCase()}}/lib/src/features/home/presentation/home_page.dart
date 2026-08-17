@@ -7,6 +7,7 @@ import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_banner.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/ads/ad_mob_service.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/di/injector.dart';
 import 'package:{{project_name.snakeCase()}}/src/core/theme/app_colors.dart';
+import 'package:{{project_name.snakeCase()}}/src/core/theme/app_primary_button.dart';
 import 'package:{{project_name.snakeCase()}}/src/features/onboarding/data/onboarding_repository.dart';
 
 class HomePage extends StatefulWidget {
@@ -219,14 +220,10 @@ class _HomeActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 20),
-        label: Text(text),
-      ),
+    return AppPrimaryButton(
+      label: text,
+      icon: icon,
+      onPressed: onPressed,
     );
   }
 }
